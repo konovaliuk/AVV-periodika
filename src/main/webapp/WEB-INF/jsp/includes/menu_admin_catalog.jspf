@@ -1,0 +1,20 @@
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<tags:admin_menu show_menu="true">
+    <jsp:attribute name="dropDownContent">
+        <form class="form">
+            <input type="hidden" name="categoryId" value="${category_info.id}"/>
+            <input type="hidden" name="categoryType" value="${category_info.type}"/>
+            <button type="submit" name="command" value="periodical_new"
+                    class="btn btn-link sharp-corners btn-block">
+                <span class="glyphicon glyphicon-plus-sign text-success"></span>
+                <fmt:message key="button.periodical_new"/>
+            </button>
+            <div class="divider"></div>
+            <button type="submit" name="command" value="category_new"
+                    class="btn btn-link sharp-corners btn-block">
+                <span class="glyphicon glyphicon-plus-sign text-success"></span>
+                <fmt:message key="button.category_new"/>
+            </button>
+        </form>
+    </jsp:attribute>
+</tags:admin_menu>

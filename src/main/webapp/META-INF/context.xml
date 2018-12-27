@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Context antiResourceLocking="true" path="/">
+    <Resource
+            name="jdbc/periodika"
+            auth="Container"
+            type="javax.sql.DataSource"
+            maxTotal="8"
+            maxIdle="8"
+            maxWaitMillis="10000"
+            username="root"
+            password="root"
+            driverClassName="com.mysql.cj.jdbc.Driver"
+            url="jdbc:mysql://localhost:3306/periodika"
+    />
+</Context>

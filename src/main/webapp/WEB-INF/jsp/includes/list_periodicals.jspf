@@ -1,0 +1,14 @@
+<c:forEach var="periodical" items="${periodicals}">
+    <div class="col-md-3">
+        <div class="thumbnail">
+            <a href="periodical?periodicalId=${periodical.id}">
+                <img class="img-responsive"
+                     src="${path_to_images}id_${periodical.id}.jpg"
+                     alt="${periodical.title}" style="width:100%"/>
+                <div class="caption text-uppercase">
+                    <p>${periodical.title}</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</c:forEach>

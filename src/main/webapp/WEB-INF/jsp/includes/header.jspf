@@ -1,0 +1,21 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/"><fmt:message key="title.site"/></a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <ctg:cmd path="/"> <fmt:message key="button.home"/> </ctg:cmd>
+                <ctg:cmd path="/catalog"> <fmt:message key="button.catalog"/> </ctg:cmd>
+            </ul>
+            <%@ include file="menu_top_localization.jspf" %>
+            <%@ include file="menu_top_user.jspf" %>
+        </div>
+    </div>
+</nav>
+

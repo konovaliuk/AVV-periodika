@@ -1,0 +1,20 @@
+<div class="text-center">
+    <h2><fmt:message key="text.catalog.categories"/></h2>
+</div>
+<div class="row">
+    <div class="col-sm-2"></div>
+    <div class="col-sm-4 text-center">
+        <h3><fmt:message key="text.catalog.newspapers_categories"/></h3>
+        <c:forEach var="category" items="${categories_newspapers}">
+            <p><a href="catalog?categoryId=${category.id}"> ${category.name} </a></p>
+        </c:forEach>
+    </div>
+    <div class="col-sm-4 text-center">
+        <h3><fmt:message key="text.catalog.magazines_categories"/></h3>
+        <c:forEach var="category" items="${categories_magazines}">
+            <p><a href="catalog?categoryId=${category.id}">${category.name} </a></p>
+        </c:forEach>
+        </ul>
+    </div>
+    <div class="col-sm-2"></div>
+</div>

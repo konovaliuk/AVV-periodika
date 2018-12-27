@@ -1,0 +1,16 @@
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="language"
+       value="${not empty param.language ? param.language : not empty language ? language : ''}"
+       scope="session"/>
+<c:if test="${language eq ''}">
+    <fmt:bundle basename="view_page_elements">
+        <c:set var="language" scope="session">
+            <fmt:message key="language.default"/>
+        </c:set>
+    </fmt:bundle>
+</c:if>
+<c:set var="language_code" value="${fn:substring(language,0,2)}"/>
+<fmt:setLocale value="${language}"/>
+<fmt:setBundle basename="view_page_elements" scope="session"/>

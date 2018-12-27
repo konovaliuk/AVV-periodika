@@ -1,0 +1,7 @@
+<c:if test="${not empty message_to_display}">
+    <div class="alert ${message_style} alert-dismissible">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>${message_to_display}
+    </div>
+    <c:remove var="message_to_display" scope="session"/>
+    <c:remove var="message_style" scope="session"/>
+</c:if>

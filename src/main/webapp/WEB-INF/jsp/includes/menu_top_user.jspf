@@ -1,0 +1,21 @@
+<ul class="nav navbar-nav navbar-right">
+    <c:choose>
+        <c:when test="${user_mode}">
+            <ctg:cmd path="/cabinet">
+                <span class="glyphicon glyphicon-user"></span> <ctg:user-info/>
+            </ctg:cmd>
+            <ctg:cmd path="/execute" command="logout">
+                <span class="glyphicon glyphicon-log-out"></span> <fmt:message key="button.user_logout"/>
+            </ctg:cmd>
+        </c:when>
+        <c:otherwise>
+            <ctg:cmd path="/register">
+                <span class="glyphicon glyphicon-user"></span> <fmt:message key="button.user_register"/>
+            </ctg:cmd>
+            <ctg:cmd path="/login">
+                <span class="glyphicon glyphicon-log-in"></span> <fmt:message key="button.user_login"/>
+            </ctg:cmd>
+        </c:otherwise>
+    </c:choose>
+</ul>
+

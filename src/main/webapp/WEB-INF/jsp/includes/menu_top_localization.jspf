@@ -1,0 +1,16 @@
+<form class="navbar-form navbar-right" method="post" id="no-action">
+    <div class="form-group">
+        <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-globe"></i></span>
+            <select class="form-control" name="language" onchange="submit()">
+                <option value="en-GB" ${language == 'en-GB' ? 'selected' : ''}>
+                    <fmt:message key="language.en"/>
+                </option>
+                <option value="uk-UA" ${language == 'uk-UA' ? 'selected' : ''}>
+                    <fmt:message key="language.uk"/>
+                </option>
+            </select>
+        </div>
+    </div>
+</form>
+

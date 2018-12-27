@@ -1,0 +1,7 @@
+<div class="col-sm-12">
+    <p><strong><c:out value="${categoryTypeInfo.pluralName}"/></strong></p>
+    <p>
+        <c:out value="${category_info.description}"/>
+    </p>
+</div>
+

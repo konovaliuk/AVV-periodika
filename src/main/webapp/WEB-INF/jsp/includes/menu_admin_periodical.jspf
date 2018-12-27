@@ -1,0 +1,36 @@
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<tags:admin_menu editing_mode="${edit_mode}" show_menu="${not new_mode}" show_edit="true" show_view="true">
+    <jsp:attribute name="dropDownContent">
+        <form class="form">
+            <input type="hidden" name="categoryId" value="${periodical_info.categoryId}"/>
+            <button type="submit" name="command" value="periodical_new"
+                    class="btn btn-link sharp-corners btn-block">
+                <span class="glyphicon glyphicon-plus-sign text-success"></span>
+                <fmt:message key="button.periodical_new"/>
+            </button>
+            <!-- Trigger the modal with a button -->
+            <button type="button" class="btn btn-link sharp-corners btn-block" id="delBtn">
+                <span class="glyphicon glyphicon-trash text-danger"></span>
+                <fmt:message key="button.periodical_delete"/>
+            </button>
+        </form>
+    </jsp:attribute>
+</tags:admin_menu>
+<c:if test="${not new_mode}">
+    <!-- Modal -->
+    <tags:modal_dialog modalId="delModal" command="periodical_delete">
+        <jsp:attribute name="title"><fmt:message key='dialog.confirm_deletion'/></jsp:attribute>
+        <jsp:attribute name="commandName"><fmt:message key="button.periodical_delete"/></jsp:attribute>
+        <jsp:attribute name="additionalControls">
+        <input type="hidden" name="periodicalId" value="${periodical_info.id}"/>
+        <input type="hidden" name="categoryId" value="${periodical_info.categoryId}"/>
+    </jsp:attribute>
+    </tags:modal_dialog>
+    <script>
+        $(document).ready(function () {
+            $("#delBtn").click(function () {
+                $("#delModal").modal();
+            });
+        });
+    </script>
+</c:if>

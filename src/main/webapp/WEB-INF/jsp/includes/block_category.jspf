@@ -1,0 +1,33 @@
+<c:choose>
+    <%--<c:when test="${not admin_mode and not empty temp_category_info}">--%>
+    <c:when test="${not admin_mode and not empty category_info}">
+        <div class="row">
+            <div class="col-sm-9">
+                <h1 class="text-uppercase"><c:out value="${category_info.name}"/></h1>
+            </div>
+            <div class="col-sm-3">
+                <%@ include file="menu_admin_category.jspf" %>
+            </div>
+        </div>
+        <div class="row">
+            <div class="tab-content">
+                <div id="view" class="tab-pane fade${not edit_mode ? ' in active':''}">
+                    <%@ include file="block_category_view.jspf" %>
+                </div>
+                <div id="edit" class="tab-pane fade${edit_mode ? ' in active':''}">
+                    <%@ include file="block_category_edit.jspf" %>
+                </div>
+            </div>
+        </div>
+    </c:when>
+    <c:otherwise>
+        <div class="row">
+            <div class="col-sm-12">
+                <h1><c:out value="${category_info.name}"/></h1>
+            </div>
+        </div>
+        <div class="row">
+            <%@ include file="block_category_view.jspf" %>
+        </div>
+    </c:otherwise>
+</c:choose>

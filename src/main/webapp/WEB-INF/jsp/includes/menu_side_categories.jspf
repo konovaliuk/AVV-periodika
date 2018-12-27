@@ -1,0 +1,37 @@
+<p>&nbsp;</p>
+<p class="text-uppercase">
+    <strong><fmt:message key="text.catalog.newspapers_categories"/></strong>
+</p>
+<c:forEach var="category" items="${categories_newspapers}">
+    <p>
+        <a href="catalog?categoryId=${category.id}">
+            <c:choose>
+                <c:when test="${category.id eq category_info.id}">
+                    <strong>${category.name}</strong>
+                </c:when>
+                <c:otherwise>
+                    ${category.name}
+                </c:otherwise>
+            </c:choose>
+        </a>
+    </p>
+</c:forEach>
+<hr/>
+<p class="text-uppercase">
+    <strong><fmt:message key="text.catalog.magazines_categories"/></strong>
+</p>
+<c:forEach var="category" items="${categories_magazines}">
+    <p>
+        <a href="catalog?categoryId=${category.id}">
+            <c:choose>
+                <c:when test="${category.id eq category_info.id}">
+                    <strong>${category.name}</strong>
+                </c:when>
+                <c:otherwise>
+                    ${category.name}
+                </c:otherwise>
+            </c:choose>
+        </a>
+    </p>
+</c:forEach>
+
