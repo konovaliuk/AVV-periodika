@@ -38,7 +38,7 @@ public abstract class AbstractDAO<T extends Entity<PK>, PK extends Serializable>
     public T create(T entity, DBContext context) throws DAOException {
         PK id;
         try (PreparedStatement st = context.getConnection()
-                                           .prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
+                .prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
             setInsertStatementValues(st, entity);
             int count = st.executeUpdate();
             if (count != 1) {

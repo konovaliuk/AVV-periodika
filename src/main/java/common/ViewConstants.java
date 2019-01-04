@@ -2,7 +2,6 @@ package common;
 
 public final class ViewConstants {
     public static final long NULL_ID = Long.MIN_VALUE;
-    public static final long NEW_ID = 0;
     public static final int NULL_CATEGORY_TYPE = -1;
     public static final String PARAM_NAME_COMMAND = "command";
     public static final String VIEW_PAGE_ELEMENTS_RESOURCE = "view_page_elements";
@@ -24,7 +23,6 @@ public final class ViewConstants {
     public static final String ATTR_NAME_USER = "user_info";
     public static final String ATTR_NAME_VALIDATION_INFO = "validation_info";
     public static final String PARAM_NAME_PERIODICAL_ID = "periodicalId";
-    public static final String PARAM_NAME_NEW_MODE = "newMode";
     public static final String INPUT_PERIODICAL_ID = "periodical_id";
     public static final String INPUT_PERIODICAL_CATEGORY_ID = "periodical_category_id";
     public static final String INPUT_PERIODICAL_TITLE = "title";
@@ -32,7 +30,7 @@ public final class ViewConstants {
     public static final String INPUT_PERIODICAL_MIN_PERIOD = "min_subscription_period";
     public static final String INPUT_PERIODICAL_ISSUES = "issues_per_period";
     public static final String INPUT_PERIODICAL_PRICE = "price_per_period";
-    public static final String INPUT_PERIODICAL_INDEX = "subscription_index";
+    public static final String INPUT_PERIODICAL_SUBINDEX = "subscription_index";
     public static final String INPUT_USER_LOGIN = "login";
     public static final String INPUT_USER_PASSWORD = "password";
     public static final String INPUT_USER_PHONE = "phone";

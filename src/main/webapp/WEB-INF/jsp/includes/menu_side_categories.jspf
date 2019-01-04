@@ -6,7 +6,7 @@
     <p>
         <a href="catalog?categoryId=${category.id}">
             <c:choose>
-                <c:when test="${category.id eq category_info.id}">
+                <c:when test="${category.id eq category_info.id or category.id eq periodical_info.categoryId}">
                     <strong>${category.name}</strong>
                 </c:when>
                 <c:otherwise>
@@ -24,7 +24,7 @@
     <p>
         <a href="catalog?categoryId=${category.id}">
             <c:choose>
-                <c:when test="${category.id eq category_info.id}">
+                <c:when test="${category.id eq category_info.id or category.id eq periodical_info.categoryId}">
                     <strong>${category.name}</strong>
                 </c:when>
                 <c:otherwise>

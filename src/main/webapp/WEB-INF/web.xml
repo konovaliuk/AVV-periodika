@@ -15,6 +15,7 @@
         <url-pattern>/main</url-pattern>
         <url-pattern>/execute</url-pattern>
         <url-pattern>/login</url-pattern>
+        <url-pattern>/logout</url-pattern>
         <url-pattern>/register</url-pattern>
         <url-pattern>/catalog</url-pattern>
         <url-pattern>/periodical</url-pattern>

@@ -4,14 +4,11 @@ import common.LoggerLoader;
 import controller.Command;
 import controller.CommandResult;
 import controller.SessionRequestContent;
-import controller.validation.CategoryMatching;
-import controller.validation.Matcher;
 import model.PeriodicalCategory;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import services.PeriodicalService;
-
-import java.util.Map;
+import services.StateHolderSaveEntity;
 
 import static common.ResourceManager.*;
 import static common.ViewConstants.*;
@@ -22,44 +19,39 @@ public class CommandCategorySave implements Command {
     @Override
     public CommandResult execute(SessionRequestContent context) {
         //todo match user rights
-        PeriodicalCategory tempCategory = fillEntity(context);
-        boolean isNew = (tempCategory.getId() == null);
-        String returnURL = RM_VIEW_PAGES.get(URL_CATALOG) +
-                           (isNew ? "" : "?" + PARAM_NAME_CATEGORY_ID + "=" + tempCategory.getId());
-        if (!validateEntity(tempCategory, context)) {
-            return CommandResult.redirect(returnURL);
-        }
-        PeriodicalCategory category = PeriodicalService.saveCategory(tempCategory, isNew);
-        if (category == null) {
-            context.setMessageDanger(RM_VIEW_MESSAGES.get(MESSAGE_CATEGORY_SAVE_ERROR));
-            context.setSessionAttribute(ATTR_NAME_TEMP_CATEGORY, tempCategory);
-            return CommandResult.redirect(returnURL);
-        }
-        context.setMessageSuccess(RM_VIEW_MESSAGES.get(MESSAGE_CATEGORY_SAVE_SUCCESS));
-        return CommandResult
-                .redirect(RM_VIEW_PAGES.get(URL_CATALOG) + "?" + PARAM_NAME_CATEGORY_ID + "=" + category.getId());
+        StateHolderSaveEntity<PeriodicalCategory> state = readState(context);
+        PeriodicalService.serveSaveCategory(state);
+        return writeNewState(state, context);
     }
 
-    private PeriodicalCategory fillEntity(SessionRequestContent context) {
+    private StateHolderSaveEntity<PeriodicalCategory> readState(SessionRequestContent context) {
+        StateHolderSaveEntity<PeriodicalCategory> state = new StateHolderSaveEntity<>();
+        state.setLanguage((String) context.getSessionAttribute(ATTR_NAME_LANGUAGE));
         long categoryId = NumberUtils.toLong(context.getRequestParameter(INPUT_CATEGORY_ID), NULL_ID);
-        return new PeriodicalCategory(categoryId == NULL_ID ? null : categoryId,
-                                      context.getRequestParameter(INPUT_CATEGORY_NAME),
-                                      NumberUtils.toInt(context.getRequestParameter(INPUT_CATEGORY_TYPE),
-                                                        NULL_CATEGORY_TYPE),
-                                      context.getRequestParameter(INPUT_CATEGORY_DESCRIPTION));
+        state.setEntity(new PeriodicalCategory(categoryId == NULL_ID ? null : categoryId,
+                                               context.getRequestParameter(INPUT_CATEGORY_NAME),
+                                               NumberUtils.toInt(context.getRequestParameter(INPUT_CATEGORY_TYPE),
+                                                                 NULL_CATEGORY_TYPE),
+                                               context.getRequestParameter(INPUT_CATEGORY_DESCRIPTION)));
+        return state;
     }
 
-    private boolean validateEntity(PeriodicalCategory category, SessionRequestContent context) {
-        Map<String, Boolean> validationInfo;
-        validationInfo =
-                Matcher.match(category, new CategoryMatching((String) context.getSessionAttribute(ATTR_NAME_LANGUAGE)));
-        context.setSessionAttribute(ATTR_NAME_VALIDATION_INFO, validationInfo);
-        if (validationInfo.containsValue(false)) {
-            context.setMessageWarning(RM_VIEW_MESSAGES.get(MESSAGE_VALIDATION_ERROR));
-            context.setSessionAttribute(ATTR_NAME_TEMP_CATEGORY, category);
-            return false;
+    private CommandResult writeNewState(StateHolderSaveEntity<PeriodicalCategory> state, SessionRequestContent context) {
+        context.setSessionAttribute(ATTR_NAME_VALIDATION_INFO, state.getValidationInfo());
+        switch (state.getResultState()) {
+            case ERROR_WRONG_PARAMETERS:
+                context.setMessageWarning(RM_VIEW_MESSAGES.get(MESSAGE_VALIDATION_ERROR));
+                context.setSessionAttribute(ATTR_NAME_TEMP_CATEGORY, state.getEntity());
+                break;
+            case ERROR_ENTITY_NOT_SAVED:
+                context.setMessageDanger(RM_VIEW_MESSAGES.get(MESSAGE_CATEGORY_SAVE_ERROR));
+                context.setSessionAttribute(ATTR_NAME_TEMP_CATEGORY, state.getEntity());
+                break;
+            default:
+                context.setMessageSuccess(RM_VIEW_MESSAGES.get(MESSAGE_CATEGORY_SAVE_SUCCESS));
         }
-        return true;
+        Long id = state.getEntity().getId();
+        return CommandResult.redirect(RM_VIEW_PAGES.get(URL_CATALOG) +
+                                      (id == null ? "" : "?" + PARAM_NAME_CATEGORY_ID + "=" + id));
     }
-
 }

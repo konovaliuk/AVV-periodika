@@ -11,11 +11,13 @@ public enum ResourceManager {
     RM_DAO_USER_INFO("dao_user_info"),
     RM_DAO_PERIODICAL_CATEGORY("dao_periodical_category"),
     RM_DAO_PERIODICAL("dao_periodical"),
+    RM_DAO_PERIODICAL_INFO("dao_periodical_info"),
     RM_VIEW_MESSAGES("view_messages"),
     RM_VIEW_PAGES("view_pages");
     public static final String URL_ROOT = "path.url.root";
     public static final String URL_MAIN = "path.url.main";
     public static final String URL_LOGIN = "path.url.login";
+    public static final String URL_LOGOUT = "path.url.logout";
     public static final String URL_REGISTER = "path.url.register";
     public static final String URL_PERIODICAL = "path.url.periodical";
     public static final String URL_CATALOG = "path.url.catalog";
@@ -24,6 +26,7 @@ public enum ResourceManager {
     public static final String PAGE_REGISTER = "path.page.register";
     public static final String PAGE_CATALOG = "path.page.catalog";
     public static final String PAGE_PERIODICAL = "path.page.periodical";
+    public static final String MESSAGE_COMMAND_EXECUTION_ERROR = "message.command_execution_error";
     public static final String MESSAGE_PERIODICAL_NOT_FOUND = "message.periodical.not_found";
     public static final String MESSAGE_PERIODICAL_SAVE_SUCCESS = "message.periodical.save_success";
     public static final String MESSAGE_PERIODICAL_SAVE_ERROR = "message.periodical.save_error";

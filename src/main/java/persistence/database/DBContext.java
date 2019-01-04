@@ -10,33 +10,23 @@ import java.sql.SQLException;
 public class DBContext {
     private static final Logger LOGGER = LoggerLoader.getLogger(DBContext.class);
     private Connection connection;
-    private boolean autoCommit;
+    private boolean autoCommit = true;
 
-    public DBContext(boolean startTransaction) {
-        if (startTransaction) {
-            beginTransaction();
-        }
-    }
+    public DBContext() { }
 
     public static <R> R executeTransactionOrNull(TransactionBody<R> body) {
-        DBContext dbContext = new DBContext(true);
+        DBContext dbContext = new DBContext();
+        dbContext.beginTransaction();
         R result;
         try {
             result = body.invoke(dbContext);
+            return dbContext.endTransaction(true) ? result : null;
         } catch (DAOException | SQLException e) {
             LOGGER.error(e);
             dbContext.endTransaction(false);
             return null;
-        }
-        return dbContext.endTransaction(true) ? result : null;
-    }
-
-    public static <R> R executeOrNull(TransactionBody<R> body, DBContext context) {
-        try {
-            return body.invoke(context);
-        } catch (DAOException | SQLException e) {
-            LOGGER.error(e);
-            return null;
+        } finally {
+            dbContext.closeConnection();
         }
     }
 
@@ -52,6 +42,15 @@ public class DBContext {
             throw new DAOException(e);
         }
         return connection;
+    }
+
+    public void closeConnection() {
+        try {
+            MySQLConnectionPool.closeConnection(connection);
+        } catch (DAOException e) {
+            LOGGER.error(e);
+        }
+        connection = null;
     }
 
     public void beginTransaction() {
@@ -81,12 +80,8 @@ public class DBContext {
                 connection.commit();
             }
         } catch (SQLException e) {
-            //todo add logger
+            LOGGER.error(e);
             rollback();
-        } finally {
-            //todo double call if rollback was executed
-            MySQLConnectionPool.closeConnection(connection);
-            connection = null;
         }
     }
 
@@ -96,15 +91,12 @@ public class DBContext {
                 connection.rollback();
             }
         } catch (SQLException e) {
-            //todo add logger
+            LOGGER.error(e);
             throw new DAOException(e);
-        } finally {
-            MySQLConnectionPool.closeConnection(connection);
-            connection = null;
         }
     }
 
     public interface TransactionBody<R> {
-        R invoke(DBContext context) throws SQLException, DAOException;
+        R invoke(DBContext context) throws DAOException, SQLException;
     }
 }

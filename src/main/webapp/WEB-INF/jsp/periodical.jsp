@@ -2,7 +2,7 @@
 <c:set var="path_to_images" value="../../images/periodicals/"/>
 <jsp:useBean id="categoryTypeInfo" class="model.CategoryTypeBean">
     <jsp:setProperty name="categoryTypeInfo" property="language" value="${language}"/>
-    <jsp:setProperty name="categoryTypeInfo" property="type" value="${category_info.type}"/>
+    <jsp:setProperty name="categoryTypeInfo" property="type" value="${periodical_info.categoryType}"/>
 </jsp:useBean>
 <c:remove var="temp_periodical_info" scope="session"/>
 <html lang="${language_code}">
@@ -21,7 +21,7 @@
             <%@ include file="includes/display_message.jspf" %>
             <div class="container-fluid">
                 <c:choose>
-                    <c:when test="${not admin_mode and not empty temp_periodical_info}">
+                    <c:when test="${admin_mode and not empty temp_periodical_info}">
                         <div class="row">
                             <div class="col-sm-8">
                                 <h1 class="text-uppercase"><c:out value="${periodical_info.title}"/></h1>

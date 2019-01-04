@@ -12,11 +12,8 @@
                 <h4><span class="glyphicon glyphicon-question-sign">
                                 </span> ${title}</h4>
             </div>
-            <%--<div class="modal-body" style="padding:7px 10px;">--%>
-            <%--<p>Confirm deletion</p>--%>
-            <%--</div>--%>
             <div class="modal-footer">
-                <form action="execute">
+                <form action="execute" method="post">
                     <jsp:invoke fragment="additionalControls"/>
                     <button type="submit" name="command" value="${command}"
                             class="btn btn-success pull-left">

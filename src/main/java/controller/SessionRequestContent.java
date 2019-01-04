@@ -95,4 +95,7 @@ public class SessionRequestContent {
         }
     }
 
+    public String getMethod() {
+        return request.getMethod();
+    }
 }

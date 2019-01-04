@@ -1,6 +1,5 @@
 <c:choose>
-    <%--<c:when test="${not admin_mode and not empty temp_category_info}">--%>
-    <c:when test="${not admin_mode and not empty category_info}">
+    <c:when test="${admin_mode and not empty category_info}">
         <div class="row">
             <div class="col-sm-9">
                 <h1 class="text-uppercase"><c:out value="${category_info.name}"/></h1>

@@ -5,12 +5,13 @@ import controller.Command;
 import controller.CommandResult;
 import controller.SessionRequestContent;
 import model.Periodical;
-import model.PeriodicalCategory;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import services.PeriodicalService;
+import services.StateHolderNavPeriodical;
 
-import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static common.ResourceManager.*;
 import static common.ViewConstants.*;
@@ -20,59 +21,41 @@ public class CommandNavPeriodical implements Command {
 
     @Override
     public CommandResult execute(SessionRequestContent context) {
-        long periodicalId = NumberUtils.toLong(context.getRequestParameter(PARAM_NAME_PERIODICAL_ID), NULL_ID);
-        Periodical tempPeriodical = (Periodical) context.getSessionAttribute(ATTR_NAME_TEMP_PERIODICAL);
+        StateHolderNavPeriodical state = readState(context);
+        PeriodicalService.serveNavPeriodical(state);
+        return writeNewState(state, context);
+    }
+
+    private StateHolderNavPeriodical readState(SessionRequestContent context) {
+        StateHolderNavPeriodical state = new StateHolderNavPeriodical();
+        state.setTempPeriodical((Periodical) context.getSessionAttribute(ATTR_NAME_TEMP_PERIODICAL));
         context.removeSessionAttribute(ATTR_NAME_TEMP_PERIODICAL);
-        if (!checkParameters(periodicalId, tempPeriodical)) {
-            return CommandResult.redirect(RM_VIEW_PAGES.get(URL_CATALOG));
-        }
-        if (!setAttributes(context, periodicalId, tempPeriodical)) {
-            return CommandResult.redirect(null);
-        }
-        return CommandResult.forward(RM_VIEW_PAGES.get(PAGE_PERIODICAL));
+        state.setPeriodicalId(NumberUtils.toLong(context.getRequestParameter(PARAM_NAME_PERIODICAL_ID), NULL_ID));
+        return state;
     }
 
-    private boolean checkParameters(long periodicalId, Periodical tempPeriodical) {
-        return periodicalId != NULL_ID && (periodicalId != NEW_ID && tempPeriodical == null ||
-                                           periodicalId != NEW_ID && tempPeriodical.getId().equals(periodicalId) ||
-                                           periodicalId == NEW_ID && tempPeriodical != null &&
-                                           tempPeriodical.getId() == null);
-    }
-
-    private boolean setAttributes(SessionRequestContent context, long periodicalId, Periodical tempPeriodical) {
-        Periodical periodical;
-        if (periodicalId == NEW_ID) {
-            periodical = tempPeriodical;
-            context.setRequestAttribute(ATTR_NAME_NEW_MODE, true);
-            context.setRequestAttribute(ATTR_NAME_EDIT_MODE, true);
-        } else {
-            periodical = PeriodicalService.findPeriodical(periodicalId);
-            if (periodical == null) {
-                context.setMessageDanger(RM_VIEW_MESSAGES.get(MESSAGE_PERIODICAL_NOT_FOUND));
-                return false;
-            }
-            if (tempPeriodical == null) {
-                tempPeriodical = periodical;
-            } else {
+    private CommandResult writeNewState(StateHolderNavPeriodical state, SessionRequestContent context) {
+        switch (state.getResultState()) {
+            case ERROR_SERVICE_EXCEPTION:
+                context.setMessageDanger(RM_VIEW_MESSAGES.get(MESSAGE_COMMAND_EXECUTION_ERROR));
+                return CommandResult.redirect(null);
+            case ERROR_WRONG_PARAMETERS:
+                return CommandResult.redirect(RM_VIEW_PAGES.get(URL_CATALOG));
+            case NEW_PERIODICAL:
+                context.setRequestAttribute(ATTR_NAME_NEW_MODE, true);
+            case EDIT_PERIODICAL:
                 context.setRequestAttribute(ATTR_NAME_EDIT_MODE, true);
-            }
+            case VIEW_PERIODICAL:
+                context.setRequestAttribute(ATTR_NAME_PERIODICAL, state.getPeriodical());
+                context.setRequestAttribute(ATTR_NAME_TEMP_PERIODICAL, state.getTempPeriodical());
+            default:
+                context.setRequestAttribute(ATTR_NAME_NEWSPAPERS, state.getCategoryNewspapers());
+                context.setRequestAttribute(ATTR_NAME_MAGAZINES, state.getCategoryMagazines());
+                context.setRequestAttribute(ATTR_NAME_CATEGORIES,
+                                            Stream.concat(state.getCategoryNewspapers().stream(),
+                                                          state.getCategoryMagazines()
+                                                                  .stream()).collect(Collectors.toList()));
+                return CommandResult.forward(RM_VIEW_PAGES.get(PAGE_PERIODICAL));
         }
-        if (periodical.getCategoryId() != null) {
-            PeriodicalCategory category = PeriodicalService.findCategory(periodical.getCategoryId());
-            if (category == null) {
-                context.setMessageWarning(RM_VIEW_MESSAGES.get(MESSAGE_CATEGORY_NOT_FOUND));
-                return false;
-            }
-            context.setRequestAttribute(ATTR_NAME_CATEGORY, category);
-        }
-        List<PeriodicalCategory> categories = PeriodicalService.findAllCategories();
-        List<PeriodicalCategory> categoryMagazines = PeriodicalService.findMagazineCategories();
-        List<PeriodicalCategory> categoryNewspapers = PeriodicalService.findNewspaperCategories();
-        context.setRequestAttribute(ATTR_NAME_CATEGORIES, categories);
-        context.setRequestAttribute(ATTR_NAME_NEWSPAPERS, categoryNewspapers);
-        context.setRequestAttribute(ATTR_NAME_MAGAZINES, categoryMagazines);
-        context.setRequestAttribute(ATTR_NAME_PERIODICAL, periodical);
-        context.setRequestAttribute(ATTR_NAME_TEMP_PERIODICAL, tempPeriodical);
-        return true;
     }
 }

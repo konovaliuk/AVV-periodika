@@ -24,7 +24,7 @@ public class CommandCategoryDelete implements Command {
             context.setMessageWarning(RM_VIEW_MESSAGES.get(MESSAGE_WRONG_PARAMETERS));
             return CommandResult.redirect(null);
         }
-        if (!PeriodicalService.deleteCategory(categoryId)) {
+        if (!PeriodicalService.serveDeleteCategory(categoryId)) {
             context.setMessageDanger(RM_VIEW_MESSAGES.get(MESSAGE_CATEGORY_DELETE_ERROR));
             return CommandResult
                     .redirect(RM_VIEW_PAGES.get(URL_CATALOG) + "?" + PARAM_NAME_CATEGORY_ID + "=" + categoryId);

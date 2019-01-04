@@ -18,8 +18,7 @@ public class User implements Entity<Long> {
     public User() {
     }
 
-    public User(Long userTypeId,
-                String firstName,
+    public User(String firstName,
                 String middleName,
                 String lastName,
                 String email,
@@ -27,7 +26,6 @@ public class User implements Entity<Long> {
                 String phone,
                 String login,
                 String password) {
-        this.userTypeId = userTypeId;
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
@@ -179,16 +177,16 @@ public class User implements Entity<Long> {
     @Override
     public String toString() {
         return new StringJoiner(", ", User.class.getSimpleName() + "[", "]").add("id=" + id)
-                                                                            .add("userTypeId=" + userTypeId)
-                                                                            .add("firstName='" + firstName + "'")
-                                                                            .add("middleName='" + middleName + "'")
-                                                                            .add("lastName='" + lastName + "'")
-                                                                            .add("email='" + email + "'")
-                                                                            .add("address='" + address + "'")
-                                                                            .add("phone='" + phone + "'")
-                                                                            .add("login='" + login + "'")
-                                                                            .add("password='" + password + "'")
-                                                                            .toString();
+                .add("userTypeId=" + userTypeId)
+                .add("firstName='" + firstName + "'")
+                .add("middleName='" + middleName + "'")
+                .add("lastName='" + lastName + "'")
+                .add("email='" + email + "'")
+                .add("address='" + address + "'")
+                .add("phone='" + phone + "'")
+                .add("login='" + login + "'")
+                .add("password='" + password + "'")
+                .toString();
     }
 
 }

@@ -1,7 +1,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <tags:admin_menu editing_mode="${edit_mode}" show_menu="${not new_mode}" show_edit="true" show_view="true">
     <jsp:attribute name="dropDownContent">
-        <form class="form">
+        <form class="form" method="post">
             <input type="hidden" name="categoryId" value="${periodical_info.categoryId}"/>
             <button type="submit" name="command" value="periodical_new"
                     class="btn btn-link sharp-corners btn-block">

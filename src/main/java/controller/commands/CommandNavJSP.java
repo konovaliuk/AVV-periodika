@@ -15,14 +15,13 @@ public class CommandNavJSP implements Command {
     public CommandResult execute(SessionRequestContent context) {
         String path = context.getServletPath();
         LOGGER.info("Requested path: " + path);
-        if (path == null || path.isEmpty()) {
-            return CommandResult.redirect(null);
-        }
-        if (path.equals(RM_VIEW_PAGES.get(URL_LOGIN))) {
-            return CommandResult.forward(RM_VIEW_PAGES.get(PAGE_LOGIN));
-        }
-        if (path.equals(RM_VIEW_PAGES.get(URL_REGISTER))) {
-            return CommandResult.forward(RM_VIEW_PAGES.get(PAGE_REGISTER));
+        if (path != null && !path.isEmpty()) {
+            if (path.equals(RM_VIEW_PAGES.get(URL_LOGIN))) {
+                return CommandResult.forward(RM_VIEW_PAGES.get(PAGE_LOGIN));
+            }
+            if (path.equals(RM_VIEW_PAGES.get(URL_REGISTER))) {
+                return CommandResult.forward(RM_VIEW_PAGES.get(PAGE_REGISTER));
+            }
         }
         LOGGER.error("Incorrect navigation path: " + path);
         return CommandResult.redirect(null);

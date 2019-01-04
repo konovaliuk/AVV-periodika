@@ -24,12 +24,14 @@ public class PeriodicalDAOImpl extends AbstractDAO<Periodical, Long> implements 
     private static final String SQL_SELECT_MIN_PERIOD = "sql.select_all.min_subscription_period";
     private static final String SQL_SELECT_ISSUES = "sql.select_all.issues_per_period";
     private static final String SQL_SELECT_PRICE = "sql.select_all.price_per_period";
+    private static final String SQL_SELECT_SUBINDEX = "sql.select_all.subscription_index";
     private static final String SQL_EDIT_CAT_ID = "sql.edit.periodical_category_id";
     private static final String SQL_EDIT_TITLE = "sql.edit.title";
     private static final String SQL_EDIT_DESC = "sql.edit.description";
     private static final String SQL_EDIT_MIN_PERIOD = "sql.edit.min_subscription_period";
     private static final String SQL_EDIT_ISSUES = "sql.edit.issues_per_period";
     private static final String SQL_EDIT_PRICE = "sql.edit.price_per_period";
+    private static final String SQL_EDIT_SUBINDEX = "sql.edit.subscription_index";
     private static final String SQL_UPDATE_ID = "sql.update.id";
 
     public PeriodicalDAOImpl() {
@@ -44,7 +46,8 @@ public class PeriodicalDAOImpl extends AbstractDAO<Periodical, Long> implements 
                               rs.getString(RESOURCES.getInt(SQL_SELECT_DESC)),
                               rs.getInt(RESOURCES.getInt(SQL_SELECT_MIN_PERIOD)),
                               rs.getInt(RESOURCES.getInt(SQL_SELECT_ISSUES)),
-                              rs.getBigDecimal(RESOURCES.getInt(SQL_SELECT_PRICE)));
+                              rs.getBigDecimal(RESOURCES.getInt(SQL_SELECT_PRICE)),
+                              rs.getString(RESOURCES.getInt(SQL_SELECT_SUBINDEX)));
     }
 
     @Override
@@ -60,6 +63,7 @@ public class PeriodicalDAOImpl extends AbstractDAO<Periodical, Long> implements 
         statement.setInt(RESOURCES.getInt(SQL_EDIT_MIN_PERIOD), entity.getMinSubscriptionPeriod());
         statement.setInt(RESOURCES.getInt(SQL_EDIT_ISSUES), entity.getIssuesPerPeriod());
         statement.setBigDecimal(RESOURCES.getInt(SQL_EDIT_PRICE), entity.getPricePerPeriod());
+        statement.setString(RESOURCES.getInt(SQL_EDIT_SUBINDEX), entity.getSubscriptionIndex());
     }
 
     @Override
@@ -70,6 +74,7 @@ public class PeriodicalDAOImpl extends AbstractDAO<Periodical, Long> implements 
         statement.setInt(RESOURCES.getInt(SQL_EDIT_MIN_PERIOD), entity.getMinSubscriptionPeriod());
         statement.setInt(RESOURCES.getInt(SQL_EDIT_ISSUES), entity.getIssuesPerPeriod());
         statement.setBigDecimal(RESOURCES.getInt(SQL_EDIT_PRICE), entity.getPricePerPeriod());
+        statement.setString(RESOURCES.getInt(SQL_EDIT_SUBINDEX), entity.getSubscriptionIndex());
         statement.setLong(RESOURCES.getInt(SQL_UPDATE_ID), entity.getId());
     }
 

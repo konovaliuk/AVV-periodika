@@ -6,5 +6,4 @@ import java.io.IOException;
 public interface Command {
 
     CommandResult execute(SessionRequestContent context) throws ServletException, IOException;
-
 }

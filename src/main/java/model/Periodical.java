@@ -10,6 +10,7 @@ public class Periodical implements Entity<Long> {
     private Integer minSubscriptionPeriod;
     private Integer issuesPerPeriod;
     private BigDecimal pricePerPeriod;
+    private String subscriptionIndex;
 
     public Periodical() {
     }
@@ -20,7 +21,8 @@ public class Periodical implements Entity<Long> {
                       String description,
                       Integer minSubscriptionPeriod,
                       Integer issuesPerPeriod,
-                      BigDecimal pricePerPeriod) {
+                      BigDecimal pricePerPeriod,
+                      String subscriptionIndex) {
         this.id = id;
         this.categoryId = categoryId;
         this.title = title;
@@ -28,6 +30,7 @@ public class Periodical implements Entity<Long> {
         this.minSubscriptionPeriod = minSubscriptionPeriod;
         this.issuesPerPeriod = issuesPerPeriod;
         this.pricePerPeriod = pricePerPeriod;
+        this.subscriptionIndex = subscriptionIndex;
     }
 
     @Override
@@ -86,5 +89,13 @@ public class Periodical implements Entity<Long> {
 
     public void setPricePerPeriod(BigDecimal pricePerPeriod) {
         this.pricePerPeriod = pricePerPeriod;
+    }
+
+    public String getSubscriptionIndex() {
+        return subscriptionIndex;
+    }
+
+    public void setSubscriptionIndex(String subscriptionIndex) {
+        this.subscriptionIndex = subscriptionIndex;
     }
 }

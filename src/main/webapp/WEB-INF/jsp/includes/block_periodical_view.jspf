@@ -6,6 +6,15 @@
 </div>
 <%--properties--%>
 <div class="col-sm-8">
+    <%--subscription_index--%>
+    <div class="row">
+        <label class="col-sm-3 text-right" for="subindex">
+            <fmt:message key="label.periodical.subscription_index"/>
+        </label>
+        <div class="col-sm-9 text-left">
+            <span id="subindex"><c:out value="${periodical_info.subscriptionIndex}"/></span>
+        </div>
+    </div>
     <%--category type--%>
     <div class="row">
         <label class="col-sm-3 text-right">
@@ -13,14 +22,15 @@
         </label>
         <span class="col-sm-9 text-left"><c:out value="${categoryTypeInfo.name}"/></span>
     </div>
+    <%--category--%>
     <div class="row">
         <label class="col-sm-3 text-right" for="category">
             <fmt:message key="label.periodical.category_id"/>
         </label>
         <div class="col-sm-9 text-left">
             <a id="category"
-               href="catalog?categoryId=${category_info.id}">
-                <c:out value="${category_info.name}"/>
+               href="catalog?categoryId=${periodical_info.categoryId}">
+                <c:out value="${periodical_info.categoryName}"/>
             </a>
         </div>
     </div>
@@ -62,12 +72,6 @@
                     ${periodical_info.minSubscriptionPeriod}&#32;
                     <fmt:message key="text.periodical.months"/></strong>
             </button>
-
-            <%--<a id="category"--%>
-            <%--href="catalog?categoryId=${category_info.id}">--%>
-            <%--<c:out value="${category_info.name}"/>--%>
-            <%--</a>--%>
         </div>
     </div>
 </div>
-<%--<div class="col-sm-1"></div>--%>

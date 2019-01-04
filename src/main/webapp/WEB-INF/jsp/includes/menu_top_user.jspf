@@ -4,7 +4,7 @@
             <ctg:cmd path="/cabinet">
                 <span class="glyphicon glyphicon-user"></span> <ctg:user-info/>
             </ctg:cmd>
-            <ctg:cmd path="/execute" command="logout">
+            <ctg:cmd path="/logout">
                 <span class="glyphicon glyphicon-log-out"></span> <fmt:message key="button.user_logout"/>
             </ctg:cmd>
         </c:when>

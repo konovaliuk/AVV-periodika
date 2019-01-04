@@ -21,15 +21,11 @@ public class CommandLogin implements Command {
 
     @Override
     public CommandResult execute(SessionRequestContent context) {
-        if (context.existSessionAttribute(ATTR_NAME_USER)) {
-            context.setMessageDanger(RM_VIEW_MESSAGES.get(MESSAGE_ALREADY_LOGGED_IN));
-            return CommandResult.redirect(null);
-        }
         User tempUser = fillEntity(context);
         if (!validateEntity(tempUser, context)) {
             return CommandResult.redirect(RM_VIEW_PAGES.get(URL_LOGIN));
         }
-        UserInfo userInfo = UserService.checkLogin(tempUser);
+        UserInfo userInfo = UserService.serveLogin(tempUser);
         if (userInfo == null) {
             context.setMessageWarning(RM_VIEW_MESSAGES.get(MESSAGE_LOGIN_ERROR));
             return CommandResult.redirect(RM_VIEW_PAGES.get(URL_LOGIN));

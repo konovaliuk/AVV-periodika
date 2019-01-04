@@ -21,20 +21,20 @@ public class CommandPeriodicalDelete implements Command {
     public CommandResult execute(SessionRequestContent context) {
         //todo match user rights
         long periodicalId = NumberUtils.toLong(context.getRequestParameter(PARAM_NAME_PERIODICAL_ID), NULL_ID);
+        long categoryId = NumberUtils.toLong(context.getRequestParameter(PARAM_NAME_CATEGORY_ID), NULL_ID);
         if (periodicalId == NULL_ID) {
             context.setMessageWarning(RM_VIEW_MESSAGES.get(MESSAGE_WRONG_PARAMETERS));
             return CommandResult.redirect(null);
         }
-        if (!PeriodicalService.deletePeriodical(periodicalId)) {
+        if (!PeriodicalService.serveDeletePeriodical(periodicalId)) {
             context.setMessageDanger(RM_VIEW_MESSAGES.get(MESSAGE_PERIODICAL_DELETE_ERROR));
-            return CommandResult
-                    .redirect(RM_VIEW_PAGES.get(URL_PERIODICAL) + "?" + PARAM_NAME_PERIODICAL_ID + "=" + periodicalId);
+            return CommandResult.redirect(
+                    RM_VIEW_PAGES.get(URL_PERIODICAL) + "?" + PARAM_NAME_PERIODICAL_ID + "=" + periodicalId);
         }
         context.setMessageSuccess(RM_VIEW_MESSAGES.get(MESSAGE_PERIODICAL_DELETE_SUCCESS));
-        long categoryId = NumberUtils.toLong(context.getRequestParameter(PARAM_NAME_CATEGORY_ID), NULL_ID);
         if (categoryId != NULL_ID) {
-            return CommandResult
-                    .redirect(RM_VIEW_PAGES.get(URL_CATALOG) + "?" + PARAM_NAME_CATEGORY_ID + "=" + categoryId);
+            return CommandResult.redirect(
+                    RM_VIEW_PAGES.get(URL_CATALOG) + "?" + PARAM_NAME_CATEGORY_ID + "=" + categoryId);
         }
         return CommandResult.redirect(RM_VIEW_PAGES.get(URL_CATALOG));
     }

@@ -30,7 +30,9 @@
                             <h1><fmt:message key="text.catalog.welcome"/></h1>
                         </div>
                         <div class="col-sm-3">
-                            <%@ include file="includes/menu_admin_catalog.jspf" %>
+                            <c:if test="${admin_mode}">
+                                <%@ include file="includes/menu_admin_catalog.jspf" %>
+                            </c:if>
                         </div>
                     </div>
                 </c:if>
@@ -45,7 +47,7 @@
                     <hr/>
                     <div class="row">
                         <div class="col-sm-12">
-                        <%@ include file="includes/menu_pagination.jspf" %>
+                            <%@ include file="includes/menu_pagination.jspf" %>
                         </div>
                     </div>
                 </c:if>
