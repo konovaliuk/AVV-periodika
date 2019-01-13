@@ -3,6 +3,9 @@ package model;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import static common.ResourceManager.RM_DAO_USER_TYPE;
+import static common.ResourceManager.USER_TYPE_ADMIN_ID;
+
 public class User implements Entity<Long> {
     private Long id;
     private Long userTypeId;
@@ -151,6 +154,10 @@ public class User implements Entity<Long> {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean getAdmin() {
+        return userTypeId.equals(RM_DAO_USER_TYPE.getLong(USER_TYPE_ADMIN_ID));
     }
 
     @Override

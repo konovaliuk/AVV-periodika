@@ -41,7 +41,7 @@
                 <c:forEach var="category" items="${categories}">
                     <option ${category.id eq temp_periodical_info.categoryId ? 'selected':''}
                             value="${category.id}">
-                            ${categoryTypeInfo.getNameByType(category.type)}(${category.id}) - <c:out
+                            ${categoryTypeInfo.getNameByTypeAndKind(category.type, true)} (${category.id}) - <c:out
                             value="${category.name}"/>
                     </option>
                 </c:forEach>

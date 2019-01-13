@@ -4,11 +4,12 @@ import common.LoggerLoader;
 import controller.Command;
 import controller.CommandResult;
 import controller.SessionRequestContent;
+import model.CategoryType;
 import model.PeriodicalCategory;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import services.PeriodicalService;
-import services.StateHolderSaveEntity;
+import services.sto.StateHolderSaveEntity;
 
 import static common.ResourceManager.*;
 import static common.ViewConstants.*;
@@ -18,7 +19,6 @@ public class CommandCategorySave implements Command {
 
     @Override
     public CommandResult execute(SessionRequestContent context) {
-        //todo match user rights
         StateHolderSaveEntity<PeriodicalCategory> state = readState(context);
         PeriodicalService.serveSaveCategory(state);
         return writeNewState(state, context);
@@ -28,15 +28,17 @@ public class CommandCategorySave implements Command {
         StateHolderSaveEntity<PeriodicalCategory> state = new StateHolderSaveEntity<>();
         state.setLanguage((String) context.getSessionAttribute(ATTR_NAME_LANGUAGE));
         long categoryId = NumberUtils.toLong(context.getRequestParameter(INPUT_CATEGORY_ID), NULL_ID);
+        CategoryType type = CategoryType.findById(NumberUtils.toInt(context.getRequestParameter(INPUT_CATEGORY_TYPE),
+                                                                    NULL_CATEGORY_TYPE));
         state.setEntity(new PeriodicalCategory(categoryId == NULL_ID ? null : categoryId,
                                                context.getRequestParameter(INPUT_CATEGORY_NAME),
-                                               NumberUtils.toInt(context.getRequestParameter(INPUT_CATEGORY_TYPE),
-                                                                 NULL_CATEGORY_TYPE),
+                                               type,
                                                context.getRequestParameter(INPUT_CATEGORY_DESCRIPTION)));
         return state;
     }
 
-    private CommandResult writeNewState(StateHolderSaveEntity<PeriodicalCategory> state, SessionRequestContent context) {
+    private CommandResult writeNewState(StateHolderSaveEntity<PeriodicalCategory> state,
+                                        SessionRequestContent context) {
         context.setSessionAttribute(ATTR_NAME_VALIDATION_INFO, state.getValidationInfo());
         switch (state.getResultState()) {
             case ERROR_WRONG_PARAMETERS:
@@ -47,7 +49,7 @@ public class CommandCategorySave implements Command {
                 context.setMessageDanger(RM_VIEW_MESSAGES.get(MESSAGE_CATEGORY_SAVE_ERROR));
                 context.setSessionAttribute(ATTR_NAME_TEMP_CATEGORY, state.getEntity());
                 break;
-            default:
+            case SUCCESS:
                 context.setMessageSuccess(RM_VIEW_MESSAGES.get(MESSAGE_CATEGORY_SAVE_SUCCESS));
         }
         Long id = state.getEntity().getId();

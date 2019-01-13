@@ -13,7 +13,7 @@
                                 </span> ${title}</h4>
             </div>
             <div class="modal-footer">
-                <form action="execute" method="post">
+                <form method="post" action="execute">
                     <jsp:invoke fragment="additionalControls"/>
                     <button type="submit" name="command" value="${command}"
                             class="btn btn-success pull-left">
@@ -21,8 +21,8 @@
                         </span> ${commandName}
                     </button>
                     <button type="submit" class="btn btn-danger btn-default"
-                            data-dismiss="modal"><span
-                            class="glyphicon glyphicon-remove"></span> <fmt:message key="button.cancel"/>
+                            data-dismiss="modal">
+                        <span class="glyphicon glyphicon-remove"></span> <fmt:message key="button.cancel"/>
                     </button>
                 </form>
             </div>

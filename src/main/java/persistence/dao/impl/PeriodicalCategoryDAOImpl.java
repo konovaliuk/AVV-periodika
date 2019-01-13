@@ -1,6 +1,7 @@
 package persistence.dao.impl;
 
 import common.ResourceManager;
+import model.CategoryType;
 import model.PeriodicalCategory;
 import persistence.dao.DAOException;
 import persistence.dao.PeriodicalCategoryDAO;
@@ -29,10 +30,15 @@ public class PeriodicalCategoryDAOImpl extends AbstractDAO<PeriodicalCategory, L
     }
 
     @Override
+    public List<PeriodicalCategory> findAllByType(CategoryType type, DBContext context) throws DAOException {
+        return select(RESOURCES.get(SQL_SELECT_BY_TYPE), context, type.getId());
+    }
+
+    @Override
     protected PeriodicalCategory valueOf(ResultSet rs) throws SQLException {
         return new PeriodicalCategory(rs.getLong(RESOURCES.getInt(SQL_SELECT_ID)),
                                       rs.getString(RESOURCES.getInt(SQL_SELECT_NAME)),
-                                      rs.getInt(RESOURCES.getInt(SQL_SELECT_TYPE)),
+                                      CategoryType.findById(rs.getInt(RESOURCES.getInt(SQL_SELECT_TYPE))),
                                       rs.getString(RESOURCES.getInt(SQL_SELECT_DESC)));
     }
 
@@ -45,21 +51,14 @@ public class PeriodicalCategoryDAOImpl extends AbstractDAO<PeriodicalCategory, L
     protected void setInsertStatementValues(PreparedStatement statement, PeriodicalCategory entity)
             throws SQLException {
         statement.setString(RESOURCES.getInt(SQL_EDIT_NAME), entity.getName());
-        statement.setLong(RESOURCES.getInt(SQL_EDIT_TYPE), entity.getType());
+        statement.setLong(RESOURCES.getInt(SQL_EDIT_TYPE), entity.getType().getId());
         statement.setString(RESOURCES.getInt(SQL_EDIT_DESC), entity.getDescription());
     }
 
     @Override
     protected void setUpdateStatementValues(PreparedStatement statement, PeriodicalCategory entity)
             throws SQLException {
-        statement.setString(RESOURCES.getInt(SQL_EDIT_NAME), entity.getName());
-        statement.setLong(RESOURCES.getInt(SQL_EDIT_TYPE), entity.getType());
-        statement.setString(RESOURCES.getInt(SQL_EDIT_DESC), entity.getDescription());
+        setInsertStatementValues(statement, entity);
         statement.setLong(RESOURCES.getInt(SQL_UPDATE_ID), entity.getId());
-    }
-
-    @Override
-    public List<PeriodicalCategory> findAllByType(Integer type, DBContext context) throws DAOException {
-        return select(RESOURCES.get(SQL_SELECT_BY_TYPE), context, type);
     }
 }

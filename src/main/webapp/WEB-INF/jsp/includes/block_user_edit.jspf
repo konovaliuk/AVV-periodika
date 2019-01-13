@@ -1,0 +1,31 @@
+<c:set var="temp_user_info" value="${not empty temp_user_info ? temp_user_info : user_info}"/>
+<form class="form-horizontal" method="post" action="${current_form_action}">
+    <input type="hidden" name="command" value="${current_form_command}"/>
+    <tags:form_field fieldValue="${temp_user_info.firstName}" labelPrefix="label.user."
+                     fieldName="first_name" pattern="name"/>
+    <tags:form_field fieldValue="${temp_user_info.middleName}" labelPrefix="label.user."
+                     fieldName="middle_name" pattern="name"/>
+    <tags:form_field fieldValue="${temp_user_info.lastName}" labelPrefix="label.user."
+                     fieldName="last_name" pattern="name"/>
+    <tags:form_field fieldValue="${temp_user_info.email}" labelPrefix="label.user."
+                     fieldName="email" pattern="email"/>
+    <tags:form_field fieldValue="${temp_user_info.phone}" labelPrefix="label.user."
+                     fieldName="phone" pattern="phone" type="tel"/>
+    <tags:form_field fieldValue="${temp_user_info.address}" labelPrefix="label.user."
+                     fieldName="address" pattern="address"/>
+    <tags:form_field fieldValue="${temp_user_info.login}" labelPrefix="label.user."
+                     fieldName="login" pattern="login" required="true"/>
+    <tags:form_field fieldValue="${temp_user_info.password}" labelPrefix="label.user."
+                     fieldName="password" pattern="password" type="password"/>
+    <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-9">
+            <button type="submit" class="btn btn-success btn-lg">
+                <span class="glyphicon glyphicon-save"></span> <fmt:message key="button.save"/>
+            </button>
+        </div>
+    </div>
+</form>
+<script>
+    $("#phone").inputmask("+99(999)999-9999");
+    $("#email").inputmask("email");
+</script>

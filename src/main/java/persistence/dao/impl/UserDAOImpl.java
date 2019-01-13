@@ -41,6 +41,12 @@ public class UserDAOImpl extends AbstractDAO<User, Long> implements UserDAO {
     }
 
     @Override
+    public User findByLogin(String login, DBContext context) throws DAOException {
+        List<User> list = select(RESOURCES.get(SQL_SELECT_BY_LOGIN), context, login);
+        return (list == null || list.isEmpty()) ? null : list.get(0);
+    }
+
+    @Override
     protected User valueOf(ResultSet rs) throws SQLException {
         return new User(rs.getLong(RESOURCES.getInt(SQL_SELECT_ID)),
                         rs.getLong(RESOURCES.getInt(SQL_SELECT_USER_TYPE_ID)),
@@ -74,21 +80,16 @@ public class UserDAOImpl extends AbstractDAO<User, Long> implements UserDAO {
 
     @Override
     protected void setUpdateStatementValues(PreparedStatement statement, User entity) throws SQLException {
-        statement.setLong(RESOURCES.getInt(SQL_EDIT_USER_TYPE_ID), entity.getUserTypeId());
-        statement.setString(RESOURCES.getInt(SQL_EDIT_FNAME), entity.getFirstName());
-        statement.setString(RESOURCES.getInt(SQL_EDIT_MNAME), entity.getMiddleName());
-        statement.setString(RESOURCES.getInt(SQL_EDIT_LNAME), entity.getLastName());
-        statement.setString(RESOURCES.getInt(SQL_EDIT_EMAIL), entity.getEmail());
-        statement.setString(RESOURCES.getInt(SQL_EDIT_ADDRESS), entity.getAddress());
-        statement.setString(RESOURCES.getInt(SQL_EDIT_PHONE), entity.getPhone());
-        statement.setString(RESOURCES.getInt(SQL_EDIT_LOGIN), entity.getLogin());
-        statement.setString(RESOURCES.getInt(SQL_EDIT_PSW), entity.getPassword());
+        //        statement.setLong(RESOURCES.getInt(SQL_EDIT_USER_TYPE_ID), entity.getUserTypeId());
+        //        statement.setString(RESOURCES.getInt(SQL_EDIT_FNAME), entity.getFirstName());
+        //        statement.setString(RESOURCES.getInt(SQL_EDIT_MNAME), entity.getMiddleName());
+        //        statement.setString(RESOURCES.getInt(SQL_EDIT_LNAME), entity.getLastName());
+        //        statement.setString(RESOURCES.getInt(SQL_EDIT_EMAIL), entity.getEmail());
+        //        statement.setString(RESOURCES.getInt(SQL_EDIT_ADDRESS), entity.getAddress());
+        //        statement.setString(RESOURCES.getInt(SQL_EDIT_PHONE), entity.getPhone());
+        //        statement.setString(RESOURCES.getInt(SQL_EDIT_LOGIN), entity.getLogin());
+        //        statement.setString(RESOURCES.getInt(SQL_EDIT_PSW), entity.getPassword());
+        setInsertStatementValues(statement, entity);
         statement.setLong(RESOURCES.getInt(SQL_UPDATE_ID), entity.getId());
-    }
-
-    @Override
-    public User findByLogin(String login, DBContext context) throws DAOException {
-        List<User> list = select(RESOURCES.get(SQL_SELECT_BY_LOGIN), context, login);
-        return (list == null || list.isEmpty()) ? null : list.get(0);
     }
 }

@@ -4,14 +4,12 @@ import common.LoggerLoader;
 import controller.Command;
 import controller.CommandResult;
 import controller.SessionRequestContent;
-import controller.validation.LoginMatching;
-import controller.validation.Matcher;
+import controller.validation.ValidationData;
+import controller.validation.Validator;
+import controller.validation.impl.LoginValidating;
 import model.User;
-import model.UserInfo;
 import org.apache.log4j.Logger;
 import services.UserService;
-
-import java.util.Map;
 
 import static common.ResourceManager.*;
 import static common.ViewConstants.*;
@@ -25,12 +23,12 @@ public class CommandLogin implements Command {
         if (!validateEntity(tempUser, context)) {
             return CommandResult.redirect(RM_VIEW_PAGES.get(URL_LOGIN));
         }
-        UserInfo userInfo = UserService.serveLogin(tempUser);
-        if (userInfo == null) {
+        User user = UserService.serveLogin(tempUser);
+        if (user == null) {
             context.setMessageWarning(RM_VIEW_MESSAGES.get(MESSAGE_LOGIN_ERROR));
             return CommandResult.redirect(RM_VIEW_PAGES.get(URL_LOGIN));
         }
-        context.setSessionAttribute(ATTR_NAME_USER, userInfo);
+        context.setSessionAttribute(ATTR_NAME_USER, user);
         context.setMessageSuccess(RM_VIEW_MESSAGES.get(MESSAGE_LOGIN_WELCOME));
         return CommandResult.redirect(RM_VIEW_PAGES.get(URL_CATALOG));
     }
@@ -41,11 +39,11 @@ public class CommandLogin implements Command {
     }
 
     private boolean validateEntity(User user, SessionRequestContent context) {
-        Map<String, Boolean> validationInfo;
+        ValidationData validationInfo;
         validationInfo =
-                Matcher.match(user, new LoginMatching((String) context.getSessionAttribute(ATTR_NAME_LANGUAGE)));
+                Validator.match(user, new LoginValidating((String) context.getSessionAttribute(ATTR_NAME_LANGUAGE)));
         context.setSessionAttribute(ATTR_NAME_VALIDATION_INFO, validationInfo);
-        if (validationInfo.containsValue(false)) {
+        if (validationInfo.containsErrors()) {
             context.setMessageWarning(RM_VIEW_MESSAGES.get(MESSAGE_VALIDATION_ERROR));
             return false;
         }

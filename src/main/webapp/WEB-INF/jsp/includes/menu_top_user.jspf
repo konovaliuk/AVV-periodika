@@ -1,20 +1,20 @@
 <ul class="nav navbar-nav navbar-right">
     <c:choose>
         <c:when test="${user_mode}">
-            <ctg:cmd path="/cabinet">
-                <span class="glyphicon glyphicon-user"></span> <ctg:user-info/>
-            </ctg:cmd>
-            <ctg:cmd path="/logout">
+            <tags:command_button path="/cabinet">
+                <span class="glyphicon glyphicon-user"></span> <fmt:message key="button.cabinet"/>
+            </tags:command_button>
+            <tags:command_button path="/logout">
                 <span class="glyphicon glyphicon-log-out"></span> <fmt:message key="button.user_logout"/>
-            </ctg:cmd>
+            </tags:command_button>
         </c:when>
         <c:otherwise>
-            <ctg:cmd path="/register">
+            <tags:command_button path="/register">
                 <span class="glyphicon glyphicon-user"></span> <fmt:message key="button.user_register"/>
-            </ctg:cmd>
-            <ctg:cmd path="/login">
+            </tags:command_button>
+            <tags:command_button path="/login">
                 <span class="glyphicon glyphicon-log-in"></span> <fmt:message key="button.user_login"/>
-            </ctg:cmd>
+            </tags:command_button>
         </c:otherwise>
     </c:choose>
 </ul>

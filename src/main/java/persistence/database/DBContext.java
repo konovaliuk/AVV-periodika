@@ -4,10 +4,11 @@ import common.LoggerLoader;
 import org.apache.log4j.Logger;
 import persistence.dao.DAOException;
 
+import java.io.Closeable;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class DBContext {
+public class DBContext implements Closeable {
     private static final Logger LOGGER = LoggerLoader.getLogger(DBContext.class);
     private Connection connection;
     private boolean autoCommit = true;
@@ -15,18 +16,23 @@ public class DBContext {
     public DBContext() { }
 
     public static <R> R executeTransactionOrNull(TransactionBody<R> body) {
-        DBContext dbContext = new DBContext();
-        dbContext.beginTransaction();
         R result;
-        try {
+        try (DBContext dbContext = new DBContext()) {
+            dbContext.beginTransaction();
             result = body.invoke(dbContext);
             return dbContext.endTransaction(true) ? result : null;
         } catch (DAOException | SQLException e) {
             LOGGER.error(e);
-            dbContext.endTransaction(false);
+        }
+        return null;
+    }
+
+    public static <R> R executeOrNull(TransactionBody<R> body, DBContext context) {
+        try {
+            return body.invoke(context);
+        } catch (DAOException | SQLException e) {
+            LOGGER.error(e);
             return null;
-        } finally {
-            dbContext.closeConnection();
         }
     }
 
@@ -44,8 +50,12 @@ public class DBContext {
         return connection;
     }
 
-    public void closeConnection() {
+    @Override
+    public void close() {
         try {
+            if (!autoCommit) {
+                endTransaction(false);
+            }
             MySQLConnectionPool.closeConnection(connection);
         } catch (DAOException e) {
             LOGGER.error(e);

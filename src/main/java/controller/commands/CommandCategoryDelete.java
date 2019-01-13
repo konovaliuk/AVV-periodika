@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import services.PeriodicalService;
 
 import static common.ResourceManager.*;
-import static common.ViewConstants.NULL_ID;
 import static common.ViewConstants.PARAM_NAME_CATEGORY_ID;
 
 
@@ -18,7 +17,6 @@ public class CommandCategoryDelete implements Command {
 
     @Override
     public CommandResult execute(SessionRequestContent context) {
-        //todo match user rights
         long categoryId = NumberUtils.toLong(context.getRequestParameter(PARAM_NAME_CATEGORY_ID), NULL_ID);
         if (categoryId == NULL_ID) {
             context.setMessageWarning(RM_VIEW_MESSAGES.get(MESSAGE_WRONG_PARAMETERS));

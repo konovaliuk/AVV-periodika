@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="custom_tags" prefix="ctg" %>
 <%@ include file="common_localization.jspf" %>
-<c:set var="user_mode" value="${not empty user_info}"/>
+<c:set var="user_mode" value="${not empty user_info && ( not empty user_info.id)}"/>
 <c:set var="admin_mode" value="${user_mode and user_info.admin}"/>
 <c:set var="validation_info" value="${validation_info}" scope="request"/>
 <c:remove var="validation_info" scope="session"/>

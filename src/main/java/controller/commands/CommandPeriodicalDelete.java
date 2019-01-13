@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import services.PeriodicalService;
 
 import static common.ResourceManager.*;
-import static common.ViewConstants.NULL_ID;
 import static common.ViewConstants.PARAM_NAME_CATEGORY_ID;
 import static common.ViewConstants.PARAM_NAME_PERIODICAL_ID;
 
@@ -19,7 +18,6 @@ public class CommandPeriodicalDelete implements Command {
 
     @Override
     public CommandResult execute(SessionRequestContent context) {
-        //todo match user rights
         long periodicalId = NumberUtils.toLong(context.getRequestParameter(PARAM_NAME_PERIODICAL_ID), NULL_ID);
         long categoryId = NumberUtils.toLong(context.getRequestParameter(PARAM_NAME_CATEGORY_ID), NULL_ID);
         if (periodicalId == NULL_ID) {

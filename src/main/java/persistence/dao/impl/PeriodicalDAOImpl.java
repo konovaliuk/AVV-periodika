@@ -1,6 +1,7 @@
 package persistence.dao.impl;
 
 import common.ResourceManager;
+import model.CategoryType;
 import model.Periodical;
 import persistence.dao.DAOException;
 import persistence.dao.PeriodicalDAO;
@@ -24,18 +25,29 @@ public class PeriodicalDAOImpl extends AbstractDAO<Periodical, Long> implements 
     private static final String SQL_SELECT_MIN_PERIOD = "sql.select_all.min_subscription_period";
     private static final String SQL_SELECT_ISSUES = "sql.select_all.issues_per_period";
     private static final String SQL_SELECT_PRICE = "sql.select_all.price_per_period";
-    private static final String SQL_SELECT_SUBINDEX = "sql.select_all.subscription_index";
+    private static final String SQL_SELECT_CATNAME = "sql.select_all.category_name";
+    private static final String SQL_SELECT_CATTYPE = "sql.select_all.category_type";
     private static final String SQL_EDIT_CAT_ID = "sql.edit.periodical_category_id";
     private static final String SQL_EDIT_TITLE = "sql.edit.title";
     private static final String SQL_EDIT_DESC = "sql.edit.description";
     private static final String SQL_EDIT_MIN_PERIOD = "sql.edit.min_subscription_period";
     private static final String SQL_EDIT_ISSUES = "sql.edit.issues_per_period";
     private static final String SQL_EDIT_PRICE = "sql.edit.price_per_period";
-    private static final String SQL_EDIT_SUBINDEX = "sql.edit.subscription_index";
     private static final String SQL_UPDATE_ID = "sql.update.id";
 
     public PeriodicalDAOImpl() {
         super(RESOURCES);
+    }
+
+    @Override
+    public List<Periodical> findAllByCategoryWithLimit(Long categoryId, Long offset, Long limit, DBContext context)
+            throws DAOException {
+        return select(RESOURCES.get(SQL_SELECT_BY_CATEGORY) + SQL_LIMIT, context, categoryId, offset, limit);
+    }
+
+    @Override
+    public Long countByCategory(Long categoryId, DBContext context) throws DAOException {
+        return count(RESOURCES.get(SQL_COUNT_BY_CATEGORY), context, categoryId);
     }
 
     @Override
@@ -47,7 +59,8 @@ public class PeriodicalDAOImpl extends AbstractDAO<Periodical, Long> implements 
                               rs.getInt(RESOURCES.getInt(SQL_SELECT_MIN_PERIOD)),
                               rs.getInt(RESOURCES.getInt(SQL_SELECT_ISSUES)),
                               rs.getBigDecimal(RESOURCES.getInt(SQL_SELECT_PRICE)),
-                              rs.getString(RESOURCES.getInt(SQL_SELECT_SUBINDEX)));
+                              rs.getString(RESOURCES.getInt(SQL_SELECT_CATNAME)),
+                              CategoryType.findById(rs.getInt(RESOURCES.getInt(SQL_SELECT_CATTYPE))));
     }
 
     @Override
@@ -63,29 +76,11 @@ public class PeriodicalDAOImpl extends AbstractDAO<Periodical, Long> implements 
         statement.setInt(RESOURCES.getInt(SQL_EDIT_MIN_PERIOD), entity.getMinSubscriptionPeriod());
         statement.setInt(RESOURCES.getInt(SQL_EDIT_ISSUES), entity.getIssuesPerPeriod());
         statement.setBigDecimal(RESOURCES.getInt(SQL_EDIT_PRICE), entity.getPricePerPeriod());
-        statement.setString(RESOURCES.getInt(SQL_EDIT_SUBINDEX), entity.getSubscriptionIndex());
     }
 
     @Override
     protected void setUpdateStatementValues(PreparedStatement statement, Periodical entity) throws SQLException {
-        statement.setLong(RESOURCES.getInt(SQL_EDIT_CAT_ID), entity.getCategoryId());
-        statement.setString(RESOURCES.getInt(SQL_EDIT_TITLE), entity.getTitle());
-        statement.setString(RESOURCES.getInt(SQL_EDIT_DESC), entity.getDescription());
-        statement.setInt(RESOURCES.getInt(SQL_EDIT_MIN_PERIOD), entity.getMinSubscriptionPeriod());
-        statement.setInt(RESOURCES.getInt(SQL_EDIT_ISSUES), entity.getIssuesPerPeriod());
-        statement.setBigDecimal(RESOURCES.getInt(SQL_EDIT_PRICE), entity.getPricePerPeriod());
-        statement.setString(RESOURCES.getInt(SQL_EDIT_SUBINDEX), entity.getSubscriptionIndex());
+        setInsertStatementValues(statement, entity);
         statement.setLong(RESOURCES.getInt(SQL_UPDATE_ID), entity.getId());
-    }
-
-    @Override
-    public List<Periodical> findAllByCategoryWithLimit(Long categoryId, Long offset, Long limit, DBContext context)
-            throws DAOException {
-        return select(RESOURCES.get(SQL_SELECT_BY_CATEGORY) + SQL_LIMIT, context, categoryId, offset, limit);
-    }
-
-    @Override
-    public Long countByCategory(Long categoryId, DBContext context) throws DAOException {
-        return count(RESOURCES.get(SQL_COUNT_BY_CATEGORY), context, categoryId);
     }
 }

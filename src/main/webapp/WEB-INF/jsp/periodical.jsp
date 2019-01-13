@@ -4,7 +4,7 @@
     <jsp:setProperty name="categoryTypeInfo" property="language" value="${language}"/>
     <jsp:setProperty name="categoryTypeInfo" property="type" value="${periodical_info.categoryType}"/>
 </jsp:useBean>
-<c:remove var="temp_periodical_info" scope="session"/>
+<c:set var="temp_periodical_info" value="${requestScope.temp_periodical_info}"/>
 <html lang="${language_code}">
 <head>
     <title><fmt:message key="title.site"/> - <c:out value="${periodical_info.title}"/></title>
@@ -48,9 +48,9 @@
                         <div class="row">
                             <div class="col-sm-12">
                                 <h1><c:out value="${periodical_info.title}"/></h1>
-                                <hr/>
                             </div>
                         </div>
+                        <hr/>
                         <div class="row">
                             <%@ include file="includes/block_periodical_view.jspf" %>
                         </div>
@@ -60,6 +60,6 @@
         </div>
     </div>
 </div>
-</body>
 <%@ include file="includes/footer.jspf" %>
+</body>
 </html>

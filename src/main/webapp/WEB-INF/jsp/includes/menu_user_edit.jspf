@@ -1,0 +1,2 @@
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<tags:admin_menu editing_mode="${edit_mode}" show_menu="${false}" show_edit="true" show_view="true"/>

@@ -43,6 +43,6 @@
         </div>
     </div>
 </div>
-</body>
 <%@ include file="includes/footer.jspf" %>
+</body>
 </html>

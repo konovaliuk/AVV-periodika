@@ -8,7 +8,7 @@ import model.Periodical;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import services.PeriodicalService;
-import services.StateHolderNavPeriodical;
+import services.sto.StateHolderNavPeriodical;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

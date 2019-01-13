@@ -3,7 +3,7 @@
     <jsp:attribute name="dropDownContent">
         <form class="form" method="post">
             <input type="hidden" name="categoryId" value="${category_info.id}"/>
-            <input type="hidden" name="categoryType" value="${category_info.type}"/>
+            <input type="hidden" name="categoryType" value="${category_info.type.id}"/>
             <button type="submit" name="command" value="periodical_new"
                     class="btn btn-link sharp-corners btn-block">
                 <span class="glyphicon glyphicon-plus-sign text-success"></span>

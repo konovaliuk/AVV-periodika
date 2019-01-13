@@ -3,11 +3,14 @@ package model;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import static common.ResourceManager.*;
 import static common.ViewConstants.VIEW_PAGE_ELEMENTS_RESOURCE;
 
 public class CategoryTypeBean {
-    private Integer type;
+    private static final String KEY_NEWSPAPER = "text.category.type_newspaper";
+    private static final String KEY_MAGAZINE = "text.category.type_magazine";
+    private static final String KEY_NEWSPAPERS_CATEGORIES = "text.catalog.newspapers_categories";
+    private static final String KEY_MAGAZINES_CATEGORIES = "text.catalog.magazines_categories";
+    private CategoryType type;
     private ResourceBundle resource;
 
     public CategoryTypeBean() {
@@ -18,47 +21,41 @@ public class CategoryTypeBean {
         resource = ResourceBundle.getBundle(VIEW_PAGE_ELEMENTS_RESOURCE, locale);
     }
 
-    public void setType(Integer type) {
+    public void setType(CategoryType type) {
         this.type = type;
     }
 
+    public CategoryType getNewspaperType() {
+        return CategoryType.NEWSPAPER;
+    }
+
+    public CategoryType getMagazineType() {
+        return CategoryType.MAGAZINE;
+    }
+
     public String getName() {
-        return getNameByType(type);
+        return getNameByTypeAndKind(type, false);
     }
 
     public String getPluralName() {
-        return getPluralNameByType(type);
+        return getNameByTypeAndKind(type, true);
     }
 
-    public Integer getNewspaperType() {
-        return RM_DAO_PERIODICAL_CATEGORY.getInt(CATEGORY_TYPE_NEWSPAPER);
+    public String getNameByType(CategoryType type) {
+        return getNameByTypeAndKind(type, false);
     }
 
-    public Integer getMagazineType() {
-        return RM_DAO_PERIODICAL_CATEGORY.getInt(CATEGORY_TYPE_MAGAZINE);
-    }
-
-    public String getNameByType(Integer type) {
-        if (resource != null && type != null) {
-            if (type.equals(getNewspaperType())) {
-                return resource.getString(KEY_NEWSPAPER);
-            }
-            if (type.equals(getMagazineType())) {
-                return resource.getString(KEY_MAGAZINE);
-            }
+    public String getNameByTypeAndKind(CategoryType type, boolean plural) {
+        if (resource == null || type == null) {
+            return "";
         }
-        return "";
-    }
-
-    public String getPluralNameByType(Integer type) {
-        if (resource != null && type != null) {
-            if (type.equals(getNewspaperType())) {
-                return resource.getString(KEY_NEWSPAPERS_CATEGORIES);
-            }
-            if (type.equals(getMagazineType())) {
-                return resource.getString(KEY_MAGAZINES_CATEGORIES);
-            }
+        switch (type) {
+            case NEWSPAPER:
+                return resource.getString(plural ? KEY_NEWSPAPERS_CATEGORIES : KEY_NEWSPAPER);
+            case MAGAZINE:
+                return resource.getString(plural ? KEY_MAGAZINES_CATEGORIES : KEY_MAGAZINE);
+            default:
+                return "";
         }
-        return "";
     }
 }

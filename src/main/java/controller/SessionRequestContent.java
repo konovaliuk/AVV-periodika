@@ -1,11 +1,14 @@
 package controller;
 
 import common.LoggerLoader;
+import model.User;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import static common.ViewConstants.ATTR_NAME_USER;
 
 public class SessionRequestContent {
 
@@ -21,6 +24,10 @@ public class SessionRequestContent {
     public SessionRequestContent(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
+    }
+
+    public User getCurrentUser() {
+        return (User) getSessionAttribute(ATTR_NAME_USER);
     }
 
     public boolean existSessionAttribute(String name) {
@@ -44,6 +51,19 @@ public class SessionRequestContent {
 
     public String getServletPath() {
         return request.getServletPath();
+    }
+
+    public String getRequestURIWithoutContext() {
+        return request.getRequestURI().substring(request.getContextPath().length());
+    }
+
+    public String getQueryString() {
+        String query = request.getQueryString();
+        return (query != null ? "?" + query : "");
+    }
+
+    public String getRequestURLWithQuery() {
+        return request.getRequestURL() + getQueryString();
     }
 
     public String getRequestParameter(String name) {

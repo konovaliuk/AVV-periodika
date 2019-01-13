@@ -20,37 +20,14 @@
         <div class="col-sm-6">
             <h1><fmt:message key="text.registration_form"/></h1>
             <hr/>
-            <form class="form-horizontal" method="post" action="register">
-                <input type="hidden" name="command" value="register"/>
-                <tags:form_field_registration fieldValue="${temp_user_info.firstName}"
-                                              fieldName="first_name" pattern="name"/>
-                <tags:form_field_registration fieldValue="${temp_user_info.middleName}"
-                                              fieldName="middle_name" pattern="name"/>
-                <tags:form_field_registration fieldValue="${temp_user_info.lastName}"
-                                              fieldName="last_name" pattern="name"/>
-                <tags:form_field_registration fieldValue="${temp_user_info.email}"
-                                              fieldName="email"/>
-                <tags:form_field_registration fieldValue="${temp_user_info.phone}"
-                                              fieldName="phone"/>
-                <tags:form_field_registration fieldValue="${temp_user_info.address}"
-                                              fieldName="address"/>
-                <tags:form_field_registration fieldValue="${temp_user_info.login}"
-                                              fieldName="login"/>
-                <tags:form_field_registration fieldValue="${temp_user_info.password}"
-                                              fieldName="password"/>
-                <div class="form-group">
-                    <div class="col-sm-offset-3 col-sm-9">
-                        <button type="submit" class="btn btn-default">
-                            <fmt:message key="button.submit"/>
-                        </button>
-                    </div>
-                </div>
-            </form>
+            <c:set var="current_form_action" value="register"/>
+            <c:set var="current_form_command" value="register"/>
+            <%@ include file="includes/block_user_edit.jspf" %>
         </div>
         <div class="col-sm-4">
         </div>
     </div>
 </div>
-</body>
 <%@ include file="includes/footer.jspf" %>
+</body>
 </html>

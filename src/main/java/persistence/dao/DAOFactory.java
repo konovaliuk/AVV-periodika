@@ -2,9 +2,9 @@ package persistence.dao;
 
 import persistence.dao.impl.PeriodicalCategoryDAOImpl;
 import persistence.dao.impl.PeriodicalDAOImpl;
-import persistence.dao.impl.PeriodicalInfoDAOImpl;
+import persistence.dao.impl.SubscriptionDAOImpl;
+import persistence.dao.impl.SubscriptionInfoDAOImpl;
 import persistence.dao.impl.UserDAOImpl;
-import persistence.dao.impl.UserInfoDAOImpl;
 import persistence.dao.impl.UserTypeDAOImpl;
 
 public class DAOFactory {
@@ -16,10 +16,6 @@ public class DAOFactory {
         return new UserTypeDAOImpl();
     }
 
-    public static UserInfoDAO getUserInfoDAO() {
-        return new UserInfoDAOImpl();
-    }
-
     public static PeriodicalCategoryDAO getPeriodicalCategoryDAO() {
         return new PeriodicalCategoryDAOImpl();
     }
@@ -28,7 +24,11 @@ public class DAOFactory {
         return new PeriodicalDAOImpl();
     }
 
-    public static PeriodicalInfoDAO getPeriodicalInfoDAO() {
-        return new PeriodicalInfoDAOImpl();
+    public static SubscriptionDAO getSubscriptionDAO() {
+        return new SubscriptionDAOImpl();
+    }
+
+    public static SubscriptionInfoDAO getSubscriptionInfoDAO() {
+        return new SubscriptionInfoDAOImpl();
     }
 }

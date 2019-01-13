@@ -3,7 +3,6 @@
 <c:set var="display_periodicals" value="${not empty periodicals}"/>
 <c:set var="display_category_info" value="${not empty category_info}"/>
 <c:set var="display_catalog_info" value="${not display_category_info}"/>
-<c:remove var="temp_category_info" scope="session"/>
 <jsp:useBean id="categoryTypeInfo" class="model.CategoryTypeBean">
     <jsp:setProperty name="categoryTypeInfo" property="language" value="${language}"/>
     <jsp:setProperty name="categoryTypeInfo" property="type" value="${category_info.type}"/>
@@ -57,6 +56,6 @@
         </div>
     </div>
 </div>
-</body>
 <%@ include file="includes/footer.jspf" %>
+</body>
 </html>

@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Objects;
 
 public class Servlet extends HttpServlet {
     private static final Logger LOGGER = LoggerLoader.getLogger(Servlet.class);
@@ -30,9 +29,9 @@ public class Servlet extends HttpServlet {
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        LOGGER.info("New request: " + request.getRequestURL() + "?" + Objects.toString(request.getQueryString(), ""));
         SessionRequestContent context = new SessionRequestContent(request, response);
-        CommandResult result = ServletHelper.findCommand(context).execute(context);
+        LOGGER.info("New request: " + context.getRequestURLWithQuery());
+        CommandResult result = CommandManager.findCommand(context).execute(context);
         LOGGER.info(result);
         if (result.isRedirection()) {
             LOGGER.info("Redirecting to: " + result.getPage());

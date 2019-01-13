@@ -12,7 +12,7 @@
             <fmt:message key="label.periodical.subscription_index"/>
         </label>
         <div class="col-sm-9 text-left">
-            <span id="subindex"><c:out value="${periodical_info.subscriptionIndex}"/></span>
+            <span id="subindex"><c:out value="${periodical_info.id}"/></span>
         </div>
     </div>
     <%--category type--%>
@@ -49,29 +49,50 @@
     <%--description--%>
     <div class="row">
         <div class="col-sm-12">
-            <p>&nbsp;</p>
             <p class="text-justify">
                 <strong>
                     <fmt:message key="label.periodical.description"/>
                 </strong><c:out value="${periodical_info.description}"/>
             </p>
-            <p>&nbsp;</p>
         </div>
     </div>
-    <%--price & buy--%>
+    <%--price--%>
     <div class="row">
-        <label class="col-sm-3 text-right" for="category">
+        <label class="col-sm-3 text-right">
             <fmt:message key="label.periodical.price"/>
         </label>
         <div class="col-sm-9 text-left">
-
-            <button type="button" class="btn btn-primary btn-lg" id="total-text">
-                <strong><c:out value="${periodical_info.pricePerPeriod}"/>&#32;
-                    <fmt:message key="currency.uah"/>&#32;
-                    <fmt:message key="text.periodical.for"/>&#32;
-                    ${periodical_info.minSubscriptionPeriod}&#32;
-                    <fmt:message key="text.periodical.months"/></strong>
-            </button>
+            <span><strong><c:out value="${periodical_info.pricePerPeriod}"/>&#32;
+                            <fmt:message key="currency.uah"/>&#32;
+                            <fmt:message key="text.periodical.for"/>&#32;
+                            ${periodical_info.minSubscriptionPeriod}&#32;
+                            <fmt:message key="text.periodical.months"/></strong>
+            </span>
+        </div>
+    </div>
+    <%--subscribe--%>
+    <p>&nbsp;</p>
+    <div class="row">
+        <div class="col-sm-9 text-left col-sm-offset-3">
+            <c:choose>
+                <c:when test="${user_mode}">
+                    <form class="form" method="post">
+                        <input type="hidden" name="periodicalId" value="${periodical_info.id}"/>
+                        <button type="submit" name="command" value="subscription_new"
+                                class="btn btn-primary btn-lg"><fmt:message key="button.subscription_new"/>
+                        </button>
+                    </form>
+                </c:when>
+                <c:otherwise>
+                    <button data-toggle="collapse" data-target="#demo"
+                            class="btn btn-primary btn-lg"><fmt:message key="button.subscription_new"/>
+                    </button>
+                    <div id="demo" class="collapse">
+                        You must <a href="register"><strong>register</strong></a>
+                        or <a href="login"><strong>login</strong></a> to subscribe...
+                    </div>
+                </c:otherwise>
+            </c:choose>
         </div>
     </div>
 </div>

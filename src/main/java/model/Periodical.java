@@ -10,7 +10,8 @@ public class Periodical implements Entity<Long> {
     private Integer minSubscriptionPeriod;
     private Integer issuesPerPeriod;
     private BigDecimal pricePerPeriod;
-    private String subscriptionIndex;
+    private String categoryName;
+    private CategoryType categoryType;
 
     public Periodical() {
     }
@@ -21,8 +22,7 @@ public class Periodical implements Entity<Long> {
                       String description,
                       Integer minSubscriptionPeriod,
                       Integer issuesPerPeriod,
-                      BigDecimal pricePerPeriod,
-                      String subscriptionIndex) {
+                      BigDecimal pricePerPeriod) {
         this.id = id;
         this.categoryId = categoryId;
         this.title = title;
@@ -30,7 +30,26 @@ public class Periodical implements Entity<Long> {
         this.minSubscriptionPeriod = minSubscriptionPeriod;
         this.issuesPerPeriod = issuesPerPeriod;
         this.pricePerPeriod = pricePerPeriod;
-        this.subscriptionIndex = subscriptionIndex;
+    }
+
+    public Periodical(Long id,
+                      Long categoryId,
+                      String title,
+                      String description,
+                      Integer minSubscriptionPeriod,
+                      Integer issuesPerPeriod,
+                      BigDecimal pricePerPeriod,
+                      String categoryName,
+                      CategoryType categoryType) {
+        this.id = id;
+        this.categoryId = categoryId;
+        this.title = title;
+        this.description = description;
+        this.minSubscriptionPeriod = minSubscriptionPeriod;
+        this.issuesPerPeriod = issuesPerPeriod;
+        this.pricePerPeriod = pricePerPeriod;
+        this.categoryName = categoryName;
+        this.categoryType = categoryType;
     }
 
     @Override
@@ -91,11 +110,19 @@ public class Periodical implements Entity<Long> {
         this.pricePerPeriod = pricePerPeriod;
     }
 
-    public String getSubscriptionIndex() {
-        return subscriptionIndex;
+    public String getCategoryName() {
+        return categoryName;
     }
 
-    public void setSubscriptionIndex(String subscriptionIndex) {
-        this.subscriptionIndex = subscriptionIndex;
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public CategoryType getCategoryType() {
+        return categoryType;
+    }
+
+    public void setCategoryType(CategoryType categoryType) {
+        this.categoryType = categoryType;
     }
 }

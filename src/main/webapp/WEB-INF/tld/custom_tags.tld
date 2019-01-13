@@ -6,46 +6,23 @@
     <short-name>custom</short-name>
     <uri>custom_tags</uri>
     <tag>
-        <name>user-info</name>
-        <tag-class>view.tags.TagCurrentUserInfo</tag-class>
+        <name>is-current-path</name>
+        <tag-class>view.tags.IsCurrentPathTag</tag-class>
         <body-content>empty</body-content>
-    </tag>
-    <tag>
-        <name>cmd</name>
-        <tag-class>view.tags.TagCommandButton</tag-class>
-        <body-content>scriptless</body-content>
+        <tei-class>view.tags.IsCurrentPathTEI</tei-class>
         <attribute>
             <name>path</name>
-            <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>command</name>
-            <required>false</required>
+            <required>true</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>
     <tag>
         <name>pagination</name>
-        <tag-class>view.tags.TagPagination</tag-class>
-        <body-content>empty</body-content>
+        <tag-class>view.tags.PaginationTag</tag-class>
+        <body-content>JSP</body-content>
+        <tei-class>view.tags.PaginationTEI</tei-class>
         <attribute>
             <name>pageCount</name>
-            <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>activePage</name>
-            <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>refPrefix</name>
-            <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-        <attribute>
-            <name>refSuffix</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>

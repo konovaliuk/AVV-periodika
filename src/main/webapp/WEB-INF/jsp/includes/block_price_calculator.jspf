@@ -1,4 +1,131 @@
+<div class="row">
+    <div class="col-lg-7 col-lg-offset-2">
+        <form class="form-horizontal" method="post">
+            <div class="panel panel-default">
+                <div class="panel-heading text-center"><h3 class="text-uppercase">Subscription calculation</h3></div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="price">
+                            <fmt:message key="label.periodical.price"/>
+                        </label>
+                        <div class="col-sm-8 text-left">
+                            <p id="price"
+                               data-price="${sub.periodical.pricePerPeriod}"
+                               data-min-period="${sub.periodical.minSubscriptionPeriod}">
+                                <strong>${sub.periodical.pricePerPeriod}</strong>&#32;
+                                <fmt:message key="currency.uah"/>&#32;
+                                <fmt:message key="text.periodical.for"/>&#32;
+                                ${sub.periodical.minSubscriptionPeriod}&#32;
+                                <fmt:message key="text.periodical.months"/>
+                            </p>
+                        </div>
+                    </div>
+                    <tags:validation key="period_start"/>
+                    <div class="form-group ${valid_class}">
+                        <label class="control-label col-sm-4" for="period-start">
+                            <fmt:message key="label.subscription.period_start"/>
+                        </label>
+                        <div class="col-sm-8">
+                            <input type="month" class="form-control" id="period-start"
+                                   name="period_start" value="${sub.periodStart}"
+                                   min="${sub.minPeriodStart}"/>
+                            ${valid_icon}
+                            ${errorMessage}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="period-count">
+                            <fmt:message key="label.subscription.periods"/>
+                        </label>
+                        <div class="col-xs-4 col-sm-4 text-left">
+                            <input type="number" class="form-control" id="period-count"
+                                   name="period_count" value="${sub.periodCount}"
+                                   min="1" max="12" step="1"/>
+                        </div>
+                        = <strong id="period-duration">${sub.periodical.minSubscriptionPeriod}</strong>&#32;
+                        <fmt:message key="text.periodical.months"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="period-end">
+                            <fmt:message key="label.subscription.period_end"/>
+                        </label>
+                        <div class="col-sm-8">
+                            <input type="month" disabled class="form-control" id="period-end" name="period_end"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" for="quantity">
+                            <fmt:message key="label.subscription.quantity"/>
+                        </label>
+                        <div class="col-sm-8">
+                            <input type="number" class="form-control" id="quantity"
+                                   name="quantity" value="${sub.quantity}"
+                                   min="1" max="100" step="1">
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="form-group">
+                        <input type="hidden" name="subscription_id" value="${sub.id}"/>
+                        <input type="hidden" name="user_id" value="${sub.userId}"/>
+                        <input type="hidden" name="periodical_id" value="${sub.periodicalId}"/>
+                        <input type="hidden" name="sum" id="total" value="${sub.periodical.pricePerPeriod}"/>
+                        <label class="control-label col-sm-4 text-right" for="total-text">
+                            <fmt:message key="label.subscription.total_sum"/>
+                        </label>
+                        <div class="col-sm-8">
+                            <button type="submit" class="btn btn-primary btn-lg"
+                                    name="command" value="payment_new">
+                                Pay: <span id="total-text"><c:out value="${sub.periodical.pricePerPeriod}"/></span>
+                            </button>
+                        </div>
+                    </div>
+                    <p>&nbsp;</p>
+                    <div class="row">
+                        <div class="col-sm-8 col-sm-push-4">
+                            <button type="submit" formaction="subscription"
+                                    name="command" value="subscription_save"
+                                    class="btn btn-success">
+                                <span class="glyphicon glyphicon-save"></span> <fmt:message key="button.save"/>
+                            </button>
+                            <c:set var="return_path" value="periodical?periodicalId=${sub.periodicalId}"/>
+                            <c:if test="${not empty sub.id}">
+                                <c:set var="return_path" value="cabinet#id${sub.id}"/>
+                            </c:if>
+                            <a class="btn btn-danger pull-right" href="${return_path}">
+                                <span class="glyphicon glyphicon-remove"></span> <fmt:message key="button.cancel"/>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        calcTotal();
+        document.querySelector("#period-start").addEventListener("input", function () {
+            calcTotal();
+        });
+        document.querySelector("#period-count").addEventListener("input", function () {
+            calcTotal();
+        });
+        document.querySelector("#quantity").addEventListener("input", function () {
+            calcTotal();
+        });
+        document.querySelector("#price").addEventListener("click", function () {
+            document.querySelector("#period-count").value = 1;
+            document.querySelector("#quantity").value = 1;
+            calcTotal();
+        });
+    });
+    var langToValue = {
+        'currency': '<fmt:message key="currency.uah"/>',
+        'for': '<fmt:message key="text.periodical.for"/>',
+        'months': '<fmt:message key="text.periodical.months"/>'
+    };
+
     function number_format(number, decimals, dec_point, thousands_sep) {
         number = (number + '').replace(/[^0-9+\-Ee.]/g, '');
         var n = !isFinite(+number) ? 0 : +number,
@@ -26,82 +153,30 @@
         return s.join(dec);
     }
 
-    var langToValue = {
-        'currency': '<fmt:message key="currency.uah"/>',
-        'for': '<fmt:message key="text.periodical.for"/>',
-        'months': '<fmt:message key="text.periodical.months"/>'
-    }
-    $(document).ready(function () {
-        calcTotal();
-        $("#period-qty").on('input', function () {
-            calcTotal();
-        });
-        $("#issue-qty").on('input', function () {
-            calcTotal();
-        });
-        $("#price").on('click', function () {
-            $("#period-qty").val(1);
-            $("#issue-qty").val(1);
-            calcTotal();
-        });
-    });
-
     function calcTotal() {
-        var lang = $("body").attr("data-locale");
-        var price = parseFloat($("#price").attr("data-price") || 0);
-        var total = parseFloat(($("#period-qty").val() * $("#issue-qty").val() * price) || 0);
-        var months = $("#period-qty").val() * parseInt($("#price").attr("data-period"));
-        $("#months").val(months);
+        var lang = document.getElementsByTagName("body")[0].getAttribute("data-locale");
+        var price = parseFloat(document.getElementById("price").getAttribute("data-price") || 0);
+        var periodCount = document.getElementById("period-count").value;
+        var total = parseFloat((periodCount * document.getElementById("quantity").value * price) || 0);
+        var months = periodCount * parseInt(document.getElementById("price").getAttribute("data-min-period"));
         var totalStr = number_format(total, 2, '.', ' ') + " " + langToValue['currency']
             + " " + langToValue['for'] + " " + months + " " + langToValue['months'];
-        $("#total").val(total);
-        $("#total-text").text(totalStr);
+        document.getElementById("period-duration").innerText = String(months);
+        document.getElementById("total").value = total;
+        document.getElementById("total-text").innerText = totalStr;
+        calcPeriodEnd(months);
+    }
+
+    function calcPeriodEnd(months) {
+        var periodStart = document.getElementById("period-start").value;
+        if (periodStart.length) {
+            periodStart = periodStart.split("-");
+            periodStart = new Date(periodStart[0], periodStart[1] - 1);
+            periodStart.setMonth(periodStart.getMonth() + months);
+            document.getElementById("period-end").valueAsDate = null;
+            document.getElementById("period-end").valueAsDate = periodStart;
+        }
     }
 </script>
-<div class="panel panel-primary text-center center-block">
-    <div class="panel-heading" id="price"
-         data-price="${periodical_info.pricePerPeriod}"
-         data-period="${periodical_info.minSubscriptionPeriod}">
-        <h3><fmt:message key="label.periodical.price"/>
-            <strong><c:out value="${periodical_info.pricePerPeriod}"/>&#32;
-                <fmt:message key="currency.uah"/>&#32;
-                <fmt:message key="text.periodical.for"/>&#32;
-                ${periodical_info.minSubscriptionPeriod}&#32;
-                <fmt:message key="text.periodical.months"/></strong></h3>
-    </div>
-    <div class="panel-body">
-        <form class="form-inline" action="/action_page.php">
-            <div class="form-group">
-                <div class="col-sm-6">
-                    <input type="hidden" id="months" value="${periodical_info.minSubscriptionPeriod}">
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-sm-6" for="period-qty">
-                    <fmt:message key="label.periodical.periods"/>
-                </label>
-                <div class="col-sm-6">
-                    <input type="number" class="form-control" id="period-qty" value="1" min="1" max="12"
-                           step="1">
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-sm-6" for="issue-qty">
-                    <fmt:message key="label.periodical.copies"/>
-                </label>
-                <div class="col-sm-6">
-                    <input type="number" class="form-control" id="issue-qty" value="1" min="1" max="100"
-                           step="1">
-                </div>
-            </div>
-        </form>
-    </div>
-    <div class="panel-footer">
-        <label class="col-sm-6"><fmt:message key="label.periodical.total_sum"/></label>
-        <button type="button" class="btn btn-primary btn-lg" id="total-text">
-            <c:out value="${periodical_info.pricePerPeriod}"/> months
-        </button>
-    </div>
-</div>
 
 

@@ -1,3 +1,4 @@
+<c:set var="temp_category_info" value="${requestScope.temp_category_info}"/>
 <div class="col-sm-12">
     <form method="post">
         <input type="hidden" name="category_id" value="${temp_category_info.id}"/>
@@ -12,7 +13,7 @@
                         <c:if test="${temp_category_info.type eq categoryTypeInfo.newspaperType}">
                             checked
                         </c:if>
-                       value="${categoryTypeInfo.newspaperType}"/>
+                       value="${categoryTypeInfo.newspaperType.id}"/>
                 ${categoryTypeInfo.getNameByType(categoryTypeInfo.newspaperType)}
             </label>
             <label class="radio-inline">
@@ -20,7 +21,7 @@
                         <c:if test="${temp_category_info.type eq categoryTypeInfo.magazineType}">
                             checked
                         </c:if>
-                       value="${categoryTypeInfo.magazineType}"/>
+                       value="${categoryTypeInfo.magazineType.id}"/>
                 ${categoryTypeInfo.getNameByType(categoryTypeInfo.magazineType)}
             </label>
         </div>

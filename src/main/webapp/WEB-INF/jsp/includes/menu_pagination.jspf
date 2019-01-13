@@ -1,10 +1,9 @@
-<c:set var="pagination_ref_prefix" value="/catalog?page="/>
-<c:set var="pagination_ref_suffix"
-       value="${display_category_info ? '&categoryId=' : ''}${display_category_info ? periodical_category.id : ''}"/>
 <ul class="pagination">
-    <ctg:pagination refPrefix="${pagination_ref_prefix}"
-                    refSuffix="${pagination_ref_suffix}"
-                    pageCount="${page_count}" activePage="${current_page}"/>
+    <ctg:pagination pageCount="${page_count}">
+        <li <c:if test="${pageNum eq current_page}">class="active"</c:if>>
+            <a href="catalog?page=${pageNum}">${pageNum}</a>
+        </li>
+    </ctg:pagination>
     <li class="disabled">
         <form method="post" class="col-sm-2">
             <div class="form-group">

@@ -1,28 +1,28 @@
 package services;
 
 import common.LoggerLoader;
-import controller.validation.CategoryMatching;
-import controller.validation.Matcher;
-import controller.validation.PeriodicalMatching;
+import controller.validation.Validator;
+import controller.validation.impl.CategoryValidating;
+import controller.validation.impl.PeriodicalValidating;
+import model.CategoryType;
 import model.Periodical;
 import model.PeriodicalCategory;
-import model.PeriodicalInfo;
 import org.apache.log4j.Logger;
 import persistence.dao.DAOException;
 import persistence.dao.DAOFactory;
 import persistence.dao.PeriodicalCategoryDAO;
+import persistence.dao.PeriodicalDAO;
 import persistence.database.DBContext;
+import services.sto.StateHolderNavCatalog;
+import services.sto.StateHolderNavPeriodical;
+import services.sto.StateHolderSaveEntity;
 
-import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static common.ResourceManager.CATEGORY_TYPE_MAGAZINE;
-import static common.ResourceManager.CATEGORY_TYPE_NEWSPAPER;
-import static common.ResourceManager.RM_DAO_PERIODICAL_CATEGORY;
-import static common.ViewConstants.NULL_ID;
+import static common.ResourceManager.NULL_ID;
 
 public class PeriodicalService {
     private static final Logger LOGGER = LoggerLoader.getLogger(PeriodicalService.class);
@@ -50,17 +50,19 @@ public class PeriodicalService {
         PERIODICAL_STATE_MAP = Collections.unmodifiableMap(pMap);
     }
 
-    public static List<PeriodicalCategory> findNewspaperCategories() {
-        return DBContext.executeTransactionOrNull(context -> DAOFactory.getPeriodicalCategoryDAO()
-                .findAllByType(RM_DAO_PERIODICAL_CATEGORY.getInt(CATEGORY_TYPE_NEWSPAPER), context));
+    public static Map<CategoryType, List<PeriodicalCategory>> findCategories() {
+        Map<CategoryType, List<PeriodicalCategory>> map = new HashMap<>();
+        DBContext dbContext = new DBContext();
+        PeriodicalCategoryDAO dao = DAOFactory.getPeriodicalCategoryDAO();
+        map.put(CategoryType.NEWSPAPER,
+                DBContext.executeOrNull(context -> dao.findAllByType(CategoryType.NEWSPAPER, context), dbContext));
+        map.put(CategoryType.MAGAZINE,
+                DBContext.executeOrNull(context -> dao.findAllByType(CategoryType.MAGAZINE, context), dbContext));
+        dbContext.close();
+        return map;
     }
 
-    public static List<PeriodicalCategory> findMagazineCategories() {
-        return DBContext.executeTransactionOrNull(context -> DAOFactory.getPeriodicalCategoryDAO()
-                .findAllByType(RM_DAO_PERIODICAL_CATEGORY.getInt(CATEGORY_TYPE_MAGAZINE), context));
-    }
-
-    private static PeriodicalCategory findCategory(Long id) {
+    public static PeriodicalCategory findCategory(Long id) {
         return DBContext.executeTransactionOrNull(context -> DAOFactory.getPeriodicalCategoryDAO()
                 .findById(id, context));
     }
@@ -70,44 +72,23 @@ public class PeriodicalService {
                 .delete(id, context)));
     }
 
-    private static List<Periodical> findPeriodicals(PeriodicalCategory category,
-                                                    int page,
-                                                    int perPage,
-                                                    DBContext dbContext) throws DAOException {
-        long limit = perPage > 0 ? perPage : Long.MAX_VALUE;
-        if (category != null && category.getId() != null && category.getId() != NULL_ID) {
-            return DAOFactory.getPeriodicalDAO()
-                    .findAllByCategoryWithLimit(category.getId(), (long) (page - 1) * perPage, limit, dbContext);
-        }
-        return DAOFactory.getPeriodicalDAO().findAllWithLimit((long) (page - 1) * perPage, limit, dbContext);
-    }
-
-    private static Long countPeriodicals(PeriodicalCategory category, DBContext dbContext) throws DAOException {
-        if (category != null && category.getId() != null && category.getId() != NULL_ID) {
-            return DAOFactory.getPeriodicalDAO().countByCategory(category.getId(), dbContext);
-        }
-        return DBContext.executeTransactionOrNull(context -> DAOFactory.getPeriodicalDAO().countAll(context));
-    }
-
     public static Boolean serveDeletePeriodical(Long id) {
         return Boolean.TRUE.equals(DBContext.executeTransactionOrNull(context -> DAOFactory.getPeriodicalDAO()
                 .delete(id, context)));
     }
 
+    public static Periodical findPeriodical(Long id) {
+        return DBContext.executeTransactionOrNull(context -> DAOFactory.getPeriodicalDAO()
+                .findById(id, context));
+    }
+
     public static void serveNavCatalog(StateHolderNavCatalog state) {
         Long categoryId = state.getCategoryId();
         PeriodicalCategory tempCategory = state.getTempCategory();
-        BitSet bs = new BitSet(4);
-        bs.set(3, categoryId != NULL_ID);
-        bs.set(2, tempCategory == null);
-        bs.set(1, tempCategory != null && tempCategory.getId() == null);
-        bs.set(0, tempCategory != null && categoryId.equals(tempCategory.getId()));
-        byte[] bytes = bs.toByteArray();
-        state.setResultState(CATALOG_STATE_MAP.getOrDefault(bytes.length > 0 ? bytes[0] : 0,
-                                                            StateHolderNavCatalog.State.ERROR_WRONG_PARAMETERS));
-        DBContext dbContext = new DBContext();
-        PeriodicalCategoryDAO categoryDAO = DAOFactory.getPeriodicalCategoryDAO();
-        try {
+        byte mask = ServiceHelper.getStateMask(categoryId, tempCategory);
+        state.setResultState(CATALOG_STATE_MAP.getOrDefault(mask, StateHolderNavCatalog.State.ERROR_WRONG_PARAMETERS));
+        try (DBContext dbContext = new DBContext()) {
+            PeriodicalCategoryDAO categoryDAO = DAOFactory.getPeriodicalCategoryDAO();
             switch (state.getResultState()) {
                 case ERROR_WRONG_PARAMETERS:
                     return;
@@ -137,26 +118,22 @@ public class PeriodicalService {
                                                          dbContext));
                 default:
             }
-            state.setCategoryNewspapers(categoryDAO.findAllByType(RM_DAO_PERIODICAL_CATEGORY.getInt(
-                    CATEGORY_TYPE_NEWSPAPER), dbContext));
-            state.setCategoryMagazines(categoryDAO.findAllByType(RM_DAO_PERIODICAL_CATEGORY.getInt(
-                    CATEGORY_TYPE_MAGAZINE), dbContext));
+            state.setCategoryNewspapers(categoryDAO.findAllByType(CategoryType.NEWSPAPER, dbContext));
+            state.setCategoryMagazines(categoryDAO.findAllByType(CategoryType.MAGAZINE, dbContext));
         } catch (DAOException e) {
             LOGGER.error(e);
             state.setResultState(StateHolderNavCatalog.State.ERROR_SERVICE_EXCEPTION);
-        } finally {
-            dbContext.closeConnection();
         }
     }
 
     public static void serveSaveCategory(StateHolderSaveEntity<PeriodicalCategory> state) {
         PeriodicalCategory category = state.getEntity();
-        PeriodicalCategory newCategory;
-        state.setValidationInfo(Matcher.match(category, new CategoryMatching(state.getLanguage())));
-        if (state.getValidationInfo().containsValue(false)) {
+        state.setValidationInfo(Validator.match(category, new CategoryValidating(state.getLanguage())));
+        if (state.getValidationInfo().containsErrors()) {
             state.setResultState(StateHolderSaveEntity.State.ERROR_WRONG_PARAMETERS);
             return;
         }
+        PeriodicalCategory newCategory;
         if (category.getId() == null) {
             newCategory = DBContext.executeTransactionOrNull(context -> DAOFactory.getPeriodicalCategoryDAO()
                     .create(category, context));
@@ -164,46 +141,25 @@ public class PeriodicalService {
             newCategory = DBContext.executeTransactionOrNull(context -> DAOFactory.getPeriodicalCategoryDAO()
                     .update(category, context));
         }
-        if (newCategory == null) {
-            state.setResultState(StateHolderSaveEntity.State.ERROR_ENTITY_NOT_SAVED);
-            return;
-        }
-        state.setEntity(newCategory);
-        state.setResultState(StateHolderSaveEntity.State.SUCCESS);
+        ServiceHelper.setSavedEntity(state, newCategory);
     }
 
     public static void serveNavPeriodical(StateHolderNavPeriodical state) {
         Long periodicalId = state.getPeriodicalId();
         Periodical tempPeriodical = state.getTempPeriodical();
-        BitSet bs = new BitSet(4);
-        bs.set(3, periodicalId != NULL_ID);
-        bs.set(2, tempPeriodical == null);
-        bs.set(1, tempPeriodical != null && tempPeriodical.getId() == null);
-        bs.set(0, tempPeriodical != null && periodicalId.equals(tempPeriodical.getId()));
-        byte[] bytes = bs.toByteArray();
-        state.setResultState(PERIODICAL_STATE_MAP.getOrDefault(bytes.length > 0 ? bytes[0] : 0,
+        byte mask = ServiceHelper.getStateMask(periodicalId, tempPeriodical);
+        state.setResultState(PERIODICAL_STATE_MAP.getOrDefault(mask,
                                                                StateHolderNavPeriodical.State.ERROR_WRONG_PARAMETERS));
-        DBContext dbContext = new DBContext();
-        try {
+        try (DBContext dbContext = new DBContext()) {
             switch (state.getResultState()) {
                 case ERROR_WRONG_PARAMETERS:
                     return;
                 case NEW_PERIODICAL:
-                    Long categoryId = tempPeriodical.getCategoryId();
-                    PeriodicalInfo periodical = new PeriodicalInfo(tempPeriodical);
-                    if (categoryId != null && categoryId != NULL_ID) {
-                        PeriodicalCategory category = PeriodicalService.findCategory(categoryId);
-                        if (category != null) {
-                            periodical.setCategoryId(categoryId);
-                            periodical.setCategoryName(category.getName());
-                            periodical.setCategoryType(category.getType());
-                        }
-                    }
-                    state.setPeriodical(periodical);
+                    state.setPeriodical(tempPeriodical);
                     break;
                 case VIEW_PERIODICAL:
                 case EDIT_PERIODICAL:
-                    state.setPeriodical(DAOFactory.getPeriodicalInfoDAO().findById(periodicalId, dbContext));
+                    state.setPeriodical(DAOFactory.getPeriodicalDAO().findById(periodicalId, dbContext));
                     if (state.getPeriodical() == null) {
                         state.setResultState(StateHolderNavPeriodical.State.ERROR_WRONG_PARAMETERS);
                         return;
@@ -214,23 +170,19 @@ public class PeriodicalService {
                 default:
             }
             PeriodicalCategoryDAO categoryDAO = DAOFactory.getPeriodicalCategoryDAO();
-            state.setCategoryNewspapers(categoryDAO.findAllByType(RM_DAO_PERIODICAL_CATEGORY.getInt(
-                    CATEGORY_TYPE_NEWSPAPER), dbContext));
-            state.setCategoryMagazines(categoryDAO.findAllByType(RM_DAO_PERIODICAL_CATEGORY.getInt(
-                    CATEGORY_TYPE_MAGAZINE), dbContext));
+            state.setCategoryNewspapers(categoryDAO.findAllByType(CategoryType.NEWSPAPER, dbContext));
+            state.setCategoryMagazines(categoryDAO.findAllByType(CategoryType.MAGAZINE, dbContext));
         } catch (DAOException e) {
             LOGGER.error(e);
             state.setResultState(StateHolderNavPeriodical.State.ERROR_SERVICE_EXCEPTION);
-        } finally {
-            dbContext.closeConnection();
         }
     }
 
     public static void serveSavePeriodical(StateHolderSaveEntity<Periodical> state) {
         Periodical periodical = state.getEntity();
         Periodical newPeriodical;
-        state.setValidationInfo(Matcher.match(periodical, new PeriodicalMatching(state.getLanguage())));
-        if (state.getValidationInfo().containsValue(false)) {
+        state.setValidationInfo(Validator.match(periodical, new PeriodicalValidating(state.getLanguage())));
+        if (state.getValidationInfo().containsErrors()) {
             state.setResultState(StateHolderSaveEntity.State.ERROR_WRONG_PARAMETERS);
             return;
         }
@@ -241,11 +193,27 @@ public class PeriodicalService {
             newPeriodical = DBContext.executeTransactionOrNull(context -> DAOFactory.getPeriodicalDAO()
                     .update(periodical, context));
         }
-        if (newPeriodical == null) {
-            state.setResultState(StateHolderSaveEntity.State.ERROR_ENTITY_NOT_SAVED);
-            return;
-        }
-        state.setEntity(newPeriodical);
-        state.setResultState(StateHolderSaveEntity.State.SUCCESS);
+        ServiceHelper.setSavedEntity(state, newPeriodical);
     }
+
+    private static List<Periodical> findPeriodicals(PeriodicalCategory category,
+                                                    int page,
+                                                    int perPage,
+                                                    DBContext dbContext) throws DAOException {
+        long limit = perPage > 0 ? perPage : Long.MAX_VALUE;
+        PeriodicalDAO dao = DAOFactory.getPeriodicalDAO();
+        if (category != null && category.getId() != null && category.getId() != NULL_ID) {
+            return dao.findAllByCategoryWithLimit(category.getId(), (long) (page - 1) * perPage, limit, dbContext);
+        }
+        return dao.findAllWithLimit((long) (page - 1) * perPage, limit, dbContext);
+    }
+
+    private static Long countPeriodicals(PeriodicalCategory category, DBContext dbContext) throws DAOException {
+        PeriodicalDAO dao = DAOFactory.getPeriodicalDAO();
+        if (category != null && category.getId() != null && category.getId() != NULL_ID) {
+            return dao.countByCategory(category.getId(), dbContext);
+        }
+        return dao.countAll(dbContext);
+    }
+
 }

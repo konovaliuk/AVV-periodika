@@ -8,7 +8,7 @@ import model.Periodical;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import services.PeriodicalService;
-import services.StateHolderSaveEntity;
+import services.sto.StateHolderSaveEntity;
 
 import java.math.BigDecimal;
 
@@ -20,7 +20,6 @@ public class CommandPeriodicalSave implements Command {
 
     @Override
     public CommandResult execute(SessionRequestContent context) {
-        //todo match user rights
         StateHolderSaveEntity<Periodical> state = readState(context);
         PeriodicalService.serveSavePeriodical(state);
         return writeNewState(state, context);
@@ -38,8 +37,7 @@ public class CommandPeriodicalSave implements Command {
                                NumberUtils.toInt(context.getRequestParameter(INPUT_PERIODICAL_MIN_PERIOD), 0),
                                NumberUtils.toInt(context.getRequestParameter(INPUT_PERIODICAL_ISSUES), 0),
                                BigDecimal.valueOf(NumberUtils.toDouble(context.getRequestParameter(
-                                       INPUT_PERIODICAL_PRICE), 0)),
-                               context.getRequestParameter(INPUT_PERIODICAL_SUBINDEX)));
+                                       INPUT_PERIODICAL_PRICE), 0))));
         return state;
     }
 
@@ -55,7 +53,7 @@ public class CommandPeriodicalSave implements Command {
                 context.setMessageDanger(RM_VIEW_MESSAGES.get(MESSAGE_PERIODICAL_SAVE_ERROR));
                 context.setSessionAttribute(ATTR_NAME_TEMP_PERIODICAL, state.getEntity());
                 break;
-            default:
+            case SUCCESS:
                 context.setMessageSuccess(RM_VIEW_MESSAGES.get(MESSAGE_PERIODICAL_SAVE_SUCCESS));
         }
         Long id = state.getEntity().getId();

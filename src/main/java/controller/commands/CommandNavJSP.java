@@ -13,7 +13,7 @@ public class CommandNavJSP implements Command {
 
     @Override
     public CommandResult execute(SessionRequestContent context) {
-        String path = context.getServletPath();
+        String path = context.getRequestURIWithoutContext();
         LOGGER.info("Requested path: " + path);
         if (path != null && !path.isEmpty()) {
             if (path.equals(RM_VIEW_PAGES.get(URL_LOGIN))) {

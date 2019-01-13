@@ -3,13 +3,13 @@ package model;
 public class PeriodicalCategory implements Entity<Long> {
     private Long id;
     private String name;
-    private Integer type;
+    private CategoryType type;
     private String description;
 
     public PeriodicalCategory() {
     }
 
-    public PeriodicalCategory(Long id, String name, Integer type, String description) {
+    public PeriodicalCategory(Long id, String name, CategoryType type, String description) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -34,11 +34,11 @@ public class PeriodicalCategory implements Entity<Long> {
         this.name = name;
     }
 
-    public Integer getType() {
+    public CategoryType getType() {
         return type;
     }
 
-    public void setType(Integer type) {
+    public void setType(CategoryType type) {
         this.type = type;
     }
 

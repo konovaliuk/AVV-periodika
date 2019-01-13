@@ -15,6 +15,6 @@
     <%@ include file="includes/display_message.jspf" %>
     <%@ include file="includes/list_categories.jspf" %>
 </div>
-</body>
 <%@ include file="includes/footer.jspf" %>
+</body>
 </html>

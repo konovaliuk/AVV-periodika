@@ -1,3 +1,4 @@
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -10,8 +11,8 @@
         </div>
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
-                <ctg:cmd path="/"> <fmt:message key="button.home"/> </ctg:cmd>
-                <ctg:cmd path="/catalog"> <fmt:message key="button.catalog"/> </ctg:cmd>
+                <tags:command_button path="/"><fmt:message key="button.home"/></tags:command_button>
+                <tags:command_button path="/catalog"><fmt:message key="button.catalog"/></tags:command_button>
             </ul>
             <%@ include file="menu_top_localization.jspf" %>
             <%@ include file="menu_top_user.jspf" %>
