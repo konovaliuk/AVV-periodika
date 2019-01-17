@@ -42,7 +42,7 @@
                         x ${sub.periodCount}<br/>
                         x ${sub.quantity}<br/>
                         = </c:if><strong>${sub.sum} <fmt:message key="currency.uah"/></strong></p>
-                <c:if test="${not empty sub.paymentId}">
+                <c:if test="${not edit_mode and not empty sub.paymentId}">
                     <a href="payment?paymentId=${sub.paymentId}">
                         <fmt:message key="text.cabinet.payment_information"/>
                     </a>

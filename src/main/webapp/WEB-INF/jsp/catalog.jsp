@@ -1,5 +1,5 @@
 <%@ include file="includes/common.jspf" %>
-<c:set var="path_to_images" value="../../images/periodicals/"/>
+<c:set var="path_to_images" value="${context_path}/images/periodicals/"/>
 <c:set var="display_periodicals" value="${not empty periodicals}"/>
 <c:set var="display_category_info" value="${not empty category_info}"/>
 <c:set var="display_catalog_info" value="${not display_category_info}"/>

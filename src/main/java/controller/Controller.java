@@ -27,7 +27,7 @@ public class Controller extends HttpServlet {
         HttpContext context = new HttpContext(request, response);
         CommandResult result = CommandManager.findCommand(context).execute(context);
         if (result.isRedirection()) {
-            response.sendRedirect(result.getPage());
+            response.sendRedirect(context.getContextPath() + result.getPage());
         } else {
             getServletContext().getRequestDispatcher(result.getPage()).forward(request, response);
         }

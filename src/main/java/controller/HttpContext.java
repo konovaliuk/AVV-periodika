@@ -49,6 +49,10 @@ public class HttpContext {
         return request.getServletPath();
     }
 
+    public String getContextPath() {
+        return request.getContextPath();
+    }
+
     public String getRequestURIWithoutContext() {
         return request.getRequestURI().substring(request.getContextPath().length());
     }

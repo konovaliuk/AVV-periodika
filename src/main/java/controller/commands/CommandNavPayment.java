@@ -3,6 +3,7 @@ package controller.commands;
 import controller.Command;
 import controller.CommandResult;
 import controller.HttpContext;
+import model.Entity;
 import model.Payment;
 import org.apache.commons.lang3.math.NumberUtils;
 import services.ServiceFactory;
@@ -44,7 +45,8 @@ public class CommandNavPayment implements Command {
             case ERROR_WRONG_PARAMETERS:
                 return CommandResult.redirect(RM_VIEW_PAGES.get(URL_CABINET));
             case SUCCESS:
-                context.setRequestAttribute(ATTR_NAME_EDIT_MODE, true);
+                context.setRequestAttribute(ATTR_NAME_EDIT_MODE, state.getEntity().getId() == null ||
+                                                                 state.getEntity().getId() == Entity.NULL_ID);
                 context.setSessionAttribute(ATTR_NAME_TEMP_PAYMENT, state.getEntity());
         }
         return CommandResult.forward(RM_VIEW_PAGES.get(PAGE_PAYMENT));

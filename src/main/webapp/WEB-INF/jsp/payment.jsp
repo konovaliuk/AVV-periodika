@@ -1,5 +1,5 @@
 <%@ include file="includes/common.jspf" %>
-<c:set var="path_to_images" value="../../images/periodicals/"/>
+<c:set var="path_to_images" value="${context_path}/images/periodicals/"/>
 <c:set var="payment" value="${temp_payment_info}"/>
 <!DOCTYPE html>
 <html lang="${language_code}">
@@ -40,7 +40,7 @@
                         <%@ include file="includes/list_subscriptions_view.jspf" %>
                     </div>
                 </div>
-                <c:if test="${edit_mode and (empty payment.id) and (empty paymentId)}">
+                <c:if test="${edit_mode}">
                     <form class="form" method="post">
                         <button type="submit" name="command" value="payment_save"
                                 class="btn btn-success btn-lg"><fmt:message key="button.payment_checkout"/>

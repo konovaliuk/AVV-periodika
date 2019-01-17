@@ -1,5 +1,5 @@
 <%@ include file="includes/common.jspf" %>
-<c:set var="path_to_images" value="../../images/periodicals/"/>
+<c:set var="path_to_images" value="${context_path}/images/periodicals/"/>
 <!DOCTYPE html>
 <html lang="${language_code}">
 <head>

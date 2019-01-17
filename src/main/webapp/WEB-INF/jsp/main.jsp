@@ -3,6 +3,9 @@
 <html lang="${language_code}">
 <head>
     <title><fmt:message key="title.site"/> - <fmt:message key="title.main"/></title>
+    <%--<c:set var="url">${pageContext.request.requestURL}</c:set>--%>
+    <%--<base href="${fn:substring(url, 0, fn:length(url) - fn:length(pageContext.request.requestURI))}${pageContext.request.contextPath}/">--%>
+    <%--<base href="http://localhost:8087/periodika/">--%>
     <%@ include file="includes/common_head.jspf" %>
 </head>
 <body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">

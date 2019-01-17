@@ -1,12 +1,18 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<c:set var="url" scope="request">${pageContext.request.requestURL}</c:set>
+<c:set var="base_url" scope="request"
+       value="${fn:substring(url, 0, fn:length(url) - fn:length(pageContext.request.requestURI))}${pageContext.request.contextPath}"/>
 <meta charset="utf-8">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<%--<link rel="stylesheet" href="../../css/bootstrap.min.css">--%>
+<%--<link rel="stylesheet" href="${context_path}/css/bootstrap.min.css">--%>
+<base href="${base_url}/">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<link rel="stylesheet" href="../../css/common.css"/>
-<script src="../../js/jquery.min.js"></script>
-<script src="../../js/bootstrap.min.js"></script>
-<script src="../../js/dist_jquery.inputmask.bundle.js"></script>
+<link rel="stylesheet" href="${context_path}/css/common.css"/>
+<script src="${context_path}/js/jquery.min.js"></script>
+<script src="${context_path}/js/bootstrap.min.js"></script>
+<script src="${context_path}/js/dist_jquery.inputmask.bundle.js"></script>
 <script>
     $(document).ready(function () {
         $(".navbar a, footer a[href='#myPage']").on('click', function (event) {

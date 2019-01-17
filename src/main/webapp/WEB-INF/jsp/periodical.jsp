@@ -1,5 +1,5 @@
 <%@ include file="includes/common.jspf" %>
-<c:set var="path_to_images" value="../../images/periodicals/"/>
+<c:set var="path_to_images" value="${context_path}/images/periodicals/"/>
 <jsp:useBean id="categoryTypeInfo" class="model.CategoryTypeBean">
     <jsp:setProperty name="categoryTypeInfo" property="language" value="${language}"/>
     <jsp:setProperty name="categoryTypeInfo" property="type" value="${periodical_info.categoryType}"/>
