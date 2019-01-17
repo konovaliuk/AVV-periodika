@@ -1,0 +1,94 @@
+<form method="post" action="payment">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th><fmt:message key="text.subscriptions.menu"/></th>
+            <th><fmt:message key="text.subscriptions.periodical_info"/></th>
+            <th><fmt:message key="text.subscriptions.duration_calc"/></th>
+            <th><fmt:message key="text.subscriptions.cost_calc"/></th>
+        </tr>
+        </thead>
+        <tbody>
+        <c:forEach var="sub" items="${subscriptions_saved}">
+            <tags:validation key="${sub.id}"/>
+            <tr class="${isValid?'':'warning'}">
+                <td>
+                    <p id="id${sub.id}">#<strong>${sub.id}</strong></p>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="subscription_id" value="${sub.id}">
+                                ${valid_icon}
+                            <fmt:message key="button.subscription_select"/>
+                        </label>
+                    </div>
+                    <div class="row text-left">
+                        <a href="subscription?subscriptionId=${sub.id}"
+                           class="btn btn-link">
+                            <span class="glyphicon glyphicon-pencil text-success"></span>
+                            <fmt:message key="button.edit"/>
+                        </a>
+                    </div>
+                    <!-- Trigger the modal with a button -->
+                    <div class="row text-left">
+                        <button type="button"
+                                class="delBtn btn btn-link"
+                                data-entity-id="${sub.id}">
+                            <span class="glyphicon glyphicon-trash text-danger"></span>
+                            <fmt:message key="button.subscription_delete"/>
+                        </button>
+                    </div>
+                </td>
+                <td>
+                    <div class="row">
+                        <div class="thumbnail" style="max-width: 70px; float: left">
+                            <a href="periodical?periodicalId=${sub.periodicalId}">
+                                <img class="img-responsive"
+                                     src="${path_to_images}<tags:image_file id="${sub.periodicalId}"/>"
+                                     alt="${sub.periodical.title}" style="width:100%"/>
+                            </a>
+                        </div>
+                        <a href="periodical?periodicalId=${sub.periodicalId}">
+                            &nbsp;#<strong>${sub.periodical.id}</strong> <c:out value="${sub.periodical.title}"/>
+                        </a>
+                        <p class="text-left"><strong>&nbsp;<fmt:message key="label.periodical.periodicity"/> </strong>
+                                ${sub.periodical.issuesPerPeriod} <fmt:message key="text.periodical.issues"/> /
+                                ${sub.periodical.minSubscriptionPeriod} <fmt:message key="text.periodical.months"/>
+                        </p>
+                    </div>
+                </td>
+                <td>${sub.periodStart} - ${sub.calcPeriodEnd}<br/>
+                    (${sub.calcDuration} <fmt:message key="text.periodical.months"/>)
+                    <div class="row"> ${errorMessage} </div>
+                </td>
+                <td>${sub.periodical.pricePerPeriod} <fmt:message key="currency.uah"/><br/>
+                    x ${sub.periodCount}<br/>
+                    x ${sub.quantity}<br/>
+                    = <strong>${sub.calcSum} <fmt:message key="currency.uah"/></strong>
+                </td>
+            </tr>
+        </c:forEach>
+        </tbody>
+    </table>
+    <button type="submit" name="command" value="payment_new"
+            class="btn btn-primary btn-lg"><fmt:message key="button.payment_new"/>
+    </button>
+</form>
+<!-- Modal -->
+<tags:modal_dialog modalId="delModal"
+                   command="subscription_delete">
+    <jsp:attribute name="title"><fmt:message key='dialog.confirm_deletion'/></jsp:attribute>
+    <jsp:attribute name="commandName">
+                                    <fmt:message key="button.subscription_delete"/>
+                                </jsp:attribute>
+    <jsp:attribute name="additionalControls">
+                                    <input type="hidden" name="subscriptionId" value="" id="inputEntityId"/>
+                                </jsp:attribute>
+</tags:modal_dialog>
+<script>
+    $(document).ready(function () {
+        $(".delBtn").click(function (event) {
+            $("#inputEntityId").val(event.target.getAttribute("data-entity-id"));
+            $("#delModal").modal();
+        });
+    });
+</script>

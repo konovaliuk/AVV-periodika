@@ -1,16 +1,13 @@
 package controller.commands;
 
-import common.LoggerLoader;
 import controller.Command;
 import controller.CommandResult;
-import controller.SessionRequestContent;
-import org.apache.log4j.Logger;
+import controller.HttpContext;
 
 public class CommandLogout implements Command {
-    private static final Logger LOGGER = LoggerLoader.getLogger(CommandLogout.class);
 
     @Override
-    public CommandResult execute(SessionRequestContent context) {
+    public CommandResult execute(HttpContext context) {
         context.invalidateSession();
         return CommandResult.redirect(null);
     }

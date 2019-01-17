@@ -3,7 +3,6 @@ package controller.validation;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static common.ResourceManager.KEY_LANGUAGE_DEFAULT;
@@ -20,8 +19,7 @@ public abstract class AbstractValidating {
         resource = ResourceBundle.getBundle(VIEW_PAGE_ELEMENTS_RESOURCE, locale);
     }
 
-    protected boolean matches(String reg, String value) {
-        Matcher matcher = Pattern.compile(reg, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE).matcher(value);
-        return matcher.matches();
+    protected boolean notMatch(String reg, String input) {
+        return !Pattern.compile(reg, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE).matcher(input).matches();
     }
 }

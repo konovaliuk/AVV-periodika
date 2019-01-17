@@ -2,11 +2,11 @@ package controller.commands;
 
 import controller.Command;
 import controller.CommandResult;
-import controller.SessionRequestContent;
+import controller.HttpContext;
 import model.SubscriptionInfo;
 import model.SubscriptionStatus;
 import model.User;
-import services.SubscriptionService;
+import services.ServiceFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -22,14 +22,15 @@ public class CommandNavCabinet implements Command {
     private static final String ATTR_NAME_SUBSCRIPTION_FINISHED = "subscriptions_finished";
 
     @Override
-    public CommandResult execute(SessionRequestContent context) {
+    public CommandResult execute(HttpContext context) {
         User tempUser = (User) context.getSessionAttribute(ATTR_NAME_TEMP_USER);
         context.removeSessionAttribute(ATTR_NAME_TEMP_USER);
         User user = context.getCurrentUser();
-        if (user == null || user.getId() == null) {
+        if (user == null || user.notSaved()) {
             return CommandResult.redirect(null);
         }
-        Map<SubscriptionStatus, List<SubscriptionInfo>> map = SubscriptionService.findUserSubscriptions(user.getId());
+        Map<SubscriptionStatus, List<SubscriptionInfo>> map =
+                ServiceFactory.getSubscriptionService().findUserSubscriptions(user.getId());
         if (tempUser != null) {
             context.setRequestAttribute(ATTR_NAME_EDIT_MODE, true);
             context.setRequestAttribute(ATTR_NAME_TEMP_USER, tempUser);

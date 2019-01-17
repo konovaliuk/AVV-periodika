@@ -11,6 +11,7 @@ public enum CommandEnum {
     NAV_PERIODICAL(new CommandNavPeriodical()),
     NAV_CABINET(new CommandNavCabinet()),
     NAV_SUBSCRIPTION(new CommandNavSubscription()),
+    NAV_PAYMENT(new CommandNavPayment()),
     LOGIN(new CommandLogin()),
     LOGOUT(new CommandLogout()),
     REGISTER(new CommandUserRegister()),
@@ -21,6 +22,8 @@ public enum CommandEnum {
     SUBSCRIPTION_NEW(new CommandSubscriptionNew()),
     SUBSCRIPTION_SAVE(new CommandSubscriptionSave()),
     SUBSCRIPTION_DELETE(new CommandSubscriptionDelete()),
+    PAYMENT_NEW(new CommandPaymentNew()),
+    PAYMENT_SAVE(new CommandPaymentSave()),
     CATEGORY_SAVE(new CommandCategorySave()),
     CATEGORY_NEW(new CommandCategoryNew()),
     CATEGORY_DELETE(new CommandCategoryDelete());

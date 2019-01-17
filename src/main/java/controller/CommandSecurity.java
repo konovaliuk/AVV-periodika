@@ -1,8 +1,6 @@
 package controller;
 
-import common.LoggerLoader;
 import model.User;
-import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -15,7 +13,6 @@ import static common.ResourceManager.USER_TYPE_ADMIN_ID;
 import static common.ResourceManager.USER_TYPE_CLIENT_ID;
 
 public class CommandSecurity {
-    private static final Logger LOGGER = LoggerLoader.getLogger(CommandSecurity.class);
     private static final Map<UserTypeEnum, Set<CommandEnum>> USER_COMMANDS_MAP;
 
     static {
@@ -38,9 +35,12 @@ public class CommandSecurity {
                           CommandEnum.NAV_PERIODICAL,
                           CommandEnum.NAV_CABINET,
                           CommandEnum.NAV_SUBSCRIPTION,
+                          CommandEnum.NAV_PAYMENT,
                           CommandEnum.SUBSCRIPTION_NEW,
                           CommandEnum.SUBSCRIPTION_SAVE,
                           CommandEnum.SUBSCRIPTION_DELETE,
+                          CommandEnum.PAYMENT_NEW,
+                          CommandEnum.PAYMENT_SAVE,
                           CommandEnum.LOGOUT);
         aMap.put(UserTypeEnum.CLIENT, Collections.unmodifiableSet(aSet));
         aSet = EnumSet.copyOf(aSet);
@@ -54,7 +54,7 @@ public class CommandSecurity {
         USER_COMMANDS_MAP = Collections.unmodifiableMap(aMap);
     }
 
-    public static Command validateCommandRequest(SessionRequestContent context, CommandEnum command) {
+    public static Command validateCommandRequest(HttpContext context, CommandEnum command) {
         UserTypeEnum userType = UserTypeEnum.GUEST;
         User user = context.getCurrentUser();
         if (user != null && user.getUserTypeId() != null) {

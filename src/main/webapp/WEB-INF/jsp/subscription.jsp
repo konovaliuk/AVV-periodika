@@ -21,7 +21,7 @@
                         <div class="thumbnail">
                             <a href="periodical?periodicalId=${sub.periodicalId}">
                                 <img class="img-responsive"
-                                     src="${path_to_images}id_${sub.periodicalId}.jpg"
+                                     src="${path_to_images}<tags:image_file id="${sub.periodicalId}"/>"
                                      alt="${sub.periodical.title}" style="width:100%"/>
                             </a>
                         </div>

@@ -13,77 +13,79 @@ import persistence.dao.DAOFactory;
 import persistence.dao.PeriodicalDAO;
 import persistence.dao.SubscriptionDAO;
 import persistence.dao.SubscriptionInfoDAO;
-import persistence.database.DBContext;
-import services.sto.StateHolderNavSubscription;
-import services.sto.StateHolderPayment;
-import services.sto.StateHolderSaveEntity;
+import persistence.database.DbContext;
+import services.states.GenericStateSave;
+import services.states.StateNavSubscription;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static common.ResourceManager.NULL_ID;
+import static model.Entity.NULL_ID;
 
 public class SubscriptionService {
     private static final Logger LOGGER = LoggerLoader.getLogger(SubscriptionService.class);
     private static final Byte MASK_NEW_SUBSCRIPTION = 0b0010;
     private static final Byte MASK_VIEW_SUBSCRIPTION = 0b1100;
     private static final Byte MASK_EDIT_SUBSCRIPTION = 0b1001;
-    private static final Map<Byte, StateHolderNavSubscription.State> SUBSCRIPTION_STATE_MAP;
+    private static final Map<Byte, StateNavSubscription.State> SUBSCRIPTION_STATE_MAP;
 
     static {
-        Map<Byte, StateHolderNavSubscription.State> pMap = new HashMap<>();
-        pMap.put(MASK_NEW_SUBSCRIPTION, StateHolderNavSubscription.State.NEW_SUBSCRIPTION);
-        pMap.put(MASK_VIEW_SUBSCRIPTION, StateHolderNavSubscription.State.VIEW_SUBSCRIPTION);
-        pMap.put(MASK_EDIT_SUBSCRIPTION, StateHolderNavSubscription.State.EDIT_SUBSCRIPTION);
+        Map<Byte, StateNavSubscription.State> pMap = new HashMap<>();
+        pMap.put(MASK_NEW_SUBSCRIPTION, StateNavSubscription.State.NEW_SUBSCRIPTION);
+        pMap.put(MASK_VIEW_SUBSCRIPTION, StateNavSubscription.State.VIEW_SUBSCRIPTION);
+        pMap.put(MASK_EDIT_SUBSCRIPTION, StateNavSubscription.State.EDIT_SUBSCRIPTION);
         SUBSCRIPTION_STATE_MAP = Collections.unmodifiableMap(pMap);
     }
 
-    public static Map<SubscriptionStatus, List<SubscriptionInfo>> findUserSubscriptions(Long userId) {
-        Map<SubscriptionStatus, List<SubscriptionInfo>> map = new HashMap<>();
-        DBContext dbContext = new DBContext();
+    SubscriptionService() {
+    }
 
-        SubscriptionInfoDAO dao = DAOFactory.getSubscriptionInfoDAO();
-        map.put(SubscriptionStatus.SAVED,
-                DBContext.executeOrNull(context -> dao.findAllByUserAndStatus(userId,
-                                                                              SubscriptionStatus.SAVED,
-                                                                              context), dbContext));
-        map.put(SubscriptionStatus.ACTIVE,
-                DBContext.executeOrNull(context -> dao.findAllByUserAndStatus(userId,
-                                                                              SubscriptionStatus.ACTIVE,
-                                                                              context), dbContext));
-        map.put(SubscriptionStatus.FINISHED,
-                DBContext.executeOrNull(context -> dao.findAllByUserAndStatus(userId,
-                                                                              SubscriptionStatus.FINISHED,
-                                                                              context), dbContext));
-        dbContext.close();
+    public Map<SubscriptionStatus, List<SubscriptionInfo>> findUserSubscriptions(Long userId) {
+        Map<SubscriptionStatus, List<SubscriptionInfo>> map = new HashMap<>();
+        try (DbContext dbContext = new DbContext()) {
+
+            SubscriptionInfoDAO dao = DAOFactory.getFactory().getSubscriptionInfoDAO();
+            map.put(SubscriptionStatus.SAVED,
+                    DbContext.executeOrNull(context -> dao.findAllByUserAndStatus(userId,
+                                                                                  SubscriptionStatus.SAVED,
+                                                                                  context), dbContext));
+            map.put(SubscriptionStatus.ACTIVE,
+                    DbContext.executeOrNull(context -> dao.findAllByUserAndStatus(userId,
+                                                                                  SubscriptionStatus.ACTIVE,
+                                                                                  context), dbContext));
+            map.put(SubscriptionStatus.FINISHED,
+                    DbContext.executeOrNull(context -> dao.findAllByUserAndStatus(userId,
+                                                                                  SubscriptionStatus.FINISHED,
+                                                                                  context), dbContext));
+        }
         return map;
     }
 
-    public static void serveSaveSubscription(StateHolderSaveEntity<SubscriptionInfo> state) {
+    public void serveSaveSubscription(GenericStateSave<SubscriptionInfo> state) {
         SubscriptionInfo subscription = state.getEntity();
         SubscriptionInfo newSubscription = null;
-        try (DBContext dbContext = new DBContext()) {
-            SubscriptionInfoDAO subscriptionInfoDAO = DAOFactory.getSubscriptionInfoDAO();
-            PeriodicalDAO periodicalDAO = DAOFactory.getPeriodicalDAO();
+        try (DbContext dbContext = new DbContext()) {
+            SubscriptionInfoDAO subscriptionInfoDAO = DAOFactory.getFactory().getSubscriptionInfoDAO();
+            PeriodicalDAO periodicalDAO = DAOFactory.getFactory().getPeriodicalDAO();
             Periodical periodical = periodicalDAO.findById(subscription.getPeriodicalId(), dbContext);
             subscription.setPeriodical(periodical);
             state.setValidationInfo(Validator.match(subscription, new SubscriptionValidating(state.getLanguage())));
             if (periodical == null ||
                 state.getValidationInfo().containsErrors() ||
                 !state.getUser().getId().equals(subscription.getUserId())) {
-                state.setResultState(StateHolderSaveEntity.State.ERROR_WRONG_PARAMETERS);
+                state.setResultState(GenericStateSave.State.ERROR_WRONG_PARAMETERS);
                 return;
             }
             subscription.fillCalculatedFields();
-            SubscriptionDAO subscriptionDAO = DAOFactory.getSubscriptionDAO();
-            if (subscription.getId() == null) {
+            SubscriptionDAO subscriptionDAO = DAOFactory.getFactory().getSubscriptionDAO();
+            if (subscription.notSaved()) {
                 newSubscription = new SubscriptionInfo(subscriptionDAO.create(subscription, dbContext), periodical);
             } else {
                 if (!isSubscriptionsReplaceable(subscriptionInfoDAO.findById(subscription.getId(), dbContext),
                                                 subscription)) {
-                    state.setResultState(StateHolderSaveEntity.State.ERROR_WRONG_PARAMETERS);
+                    state.setResultState(GenericStateSave.State.ERROR_WRONG_PARAMETERS);
                     return;
                 }
                 newSubscription = new SubscriptionInfo(subscriptionDAO.update(subscription, dbContext), periodical);
@@ -94,48 +96,47 @@ public class SubscriptionService {
         ServiceHelper.setSavedEntity(state, newSubscription);
     }
 
-    public static boolean serveDeleteSubscription(Long id) {
-        return Boolean.TRUE.equals(DBContext.executeTransactionOrNull(context -> DAOFactory.getSubscriptionDAO()
+    public boolean serveDeleteSubscription(Long id) {
+        return Boolean.TRUE.equals(DbContext.executeTransactionOrNull(context -> DAOFactory.getFactory()
+                .getSubscriptionDAO()
                 .delete(id, context)));
     }
 
-    public static void serveNavSubscription(StateHolderNavSubscription state) {
-        Long subscriptionId = state.getSubscriptionId();
-        SubscriptionInfo tempSubscription = state.getTempSubscription();
+    public void serveNavSubscription(StateNavSubscription state) {
+        Long subscriptionId = state.getEntityId();
+        SubscriptionInfo tempSubscription = state.getTempEntity();
         byte mask = ServiceHelper.getStateMask(subscriptionId, tempSubscription);
         state.setResultState(SUBSCRIPTION_STATE_MAP.getOrDefault(mask,
-                                                                 StateHolderNavSubscription.State.ERROR_WRONG_PARAMETERS));
-        try (DBContext dbContext = new DBContext()) {
+                                                                 StateNavSubscription.State.ERROR_WRONG_PARAMETERS));
+        try (DbContext dbContext = new DbContext()) {
             switch (state.getResultState()) {
                 case ERROR_WRONG_PARAMETERS:
                     return;
                 case NEW_SUBSCRIPTION:
-                    state.setSubscription(tempSubscription);
+                    state.setEntity(tempSubscription);
                     break;
                 case VIEW_SUBSCRIPTION:
                 case EDIT_SUBSCRIPTION:
-                    state.setSubscription(DAOFactory.getSubscriptionInfoDAO().findById(subscriptionId, dbContext));
-                    if (state.getSubscription() == null ||
-                        !state.getUser().getId().equals(state.getSubscription().getUserId())) {
-                        state.setResultState(StateHolderNavSubscription.State.ERROR_WRONG_PARAMETERS);
+                    state.setEntity(DAOFactory.getFactory()
+                                            .getSubscriptionInfoDAO()
+                                            .findById(subscriptionId, dbContext));
+                    if (state.getEntity() == null ||
+                        !state.getUser().getId().equals(state.getEntity().getUserId())) {
+                        state.setResultState(StateNavSubscription.State.ERROR_WRONG_PARAMETERS);
                         return;
                     }
-                    if (state.getTempSubscription() == null) {
-                        state.setTempSubscription(state.getSubscription());
+                    if (state.getTempEntity() == null) {
+                        state.setTempEntity(state.getEntity());
                     }
                 default:
             }
         } catch (DAOException e) {
             LOGGER.error(e);
-            state.setResultState(StateHolderNavSubscription.State.ERROR_SERVICE_EXCEPTION);
+            state.setResultState(StateNavSubscription.State.ERROR_SERVICE_EXCEPTION);
         }
     }
 
-    public static void serveNewPayment(StateHolderPayment state) {
-    }
-
-    private static boolean isSubscriptionsReplaceable(Subscription savedSubscription,
-                                                      Subscription newSubscription) {
+    private boolean isSubscriptionsReplaceable(Subscription savedSubscription, Subscription newSubscription) {
         return savedSubscription != null &&
                (savedSubscription.getPaymentId() == null ||
                 savedSubscription.getPaymentId() == NULL_ID) &&

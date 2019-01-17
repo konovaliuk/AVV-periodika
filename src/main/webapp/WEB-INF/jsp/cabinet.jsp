@@ -13,9 +13,39 @@
         <div class="col-sm-12 text-left">
             <%@ include file="includes/display_message.jspf" %>
             <div class="container-fluid">
+                <h2 class="text-uppercase"><fmt:message key="text.subscriptions"/></h2>
+                <hr/>
+                <c:if test="${not empty subscriptions_saved and subscriptions_saved.size()>0}">
+                    <h3 id="subscriptions"><fmt:message
+                            key="text.subscriptions.saved"/> (${subscriptions_saved.size()}):</h3>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <%@ include file="includes/list_subscriptions_saved.jspf" %>
+                        </div>
+                    </div>
+                    <hr/>
+                </c:if>
+                <c:if test="${not empty subscriptions_active and subscriptions_active.size()>0}">
+                    <c:set var="subscriptions_list" value="${subscriptions_active}"/>
+                    <h3><fmt:message key="text.subscriptions.active"/> (${subscriptions_list.size()}):</h3>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <%@ include file="includes/list_subscriptions_view.jspf" %>
+                        </div>
+                    </div>
+                </c:if>
+                <c:if test="${not empty subscriptions_finished and subscriptions_finished.size()>0}">
+                    <c:set var="subscriptions_list" value="${subscriptions_finished}"/>
+                    <h3><fmt:message key="text.subscriptions.finished"/> (${subscriptions_list.size()}):</h3>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <%@ include file="includes/list_subscriptions_view.jspf" %>
+                        </div>
+                    </div>
+                </c:if>
                 <div class="row">
                     <div class="col-sm-8">
-                        <h2 class="text-uppercase"><fmt:message key="text.personal_information"/></h2>
+                        <h2 class="text-uppercase"><fmt:message key="text.cabinet.personal_information"/></h2>
                     </div>
                     <div class="col-sm-3">
                         <%@ include file="includes/menu_user_edit.jspf" %>
@@ -42,74 +72,6 @@
                     <div class="col-sm-5">
                     </div>
                 </div>
-                <h2 class="text-uppercase"><fmt:message key="text.subscriptions"/></h2>
-                <hr/>
-                <c:if test="${not empty subscriptions_saved and subscriptions_saved.size()>0}">
-                    <h3><fmt:message key="text.subscriptions.saved"/> (${subscriptions_saved.size()}):</h3>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <%@ include file="includes/block_subscriptions_saved.jspf" %>
-                        </div>
-                    </div>
-                </c:if>
-                <c:if test="${not empty subscriptions_active and subscriptions_active.size()>0}">
-                    <h3>Active subscriptions (${subscriptions_active.size()}):</h3>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <table class="table table-hover">
-                                <thead>
-                                <tr>
-                                    <th>Periodical</th>
-                                    <th>Start</th>
-                                    <th>End</th>
-                                    <th>Quantity</th>
-                                    <th>Cost</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <c:forEach var="sub" items="${subscriptions_active}">
-                                    <tr>
-                                        <td>${sub.periodicalId}</td>
-                                        <td>${sub.periodStart}</td>
-                                        <td>${sub.periodEnd}</td>
-                                        <td>${sub.quantity}</td>
-                                        <td>${sub.sum}</td>
-                                    </tr>
-                                </c:forEach>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </c:if>
-                <c:if test="${not empty subscriptions_finished and subscriptions_finished.size()>0}">
-                    <h3>Finished subscriptions (${subscriptions_finished.size()}):</h3>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <table class="table table-hover">
-                                <thead>
-                                <tr>
-                                    <th>Periodical</th>
-                                    <th>Start</th>
-                                    <th>End</th>
-                                    <th>Quantity</th>
-                                    <th>Cost</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <c:forEach var="sub" items="${subscriptions_finished}">
-                                    <tr>
-                                        <td>${sub.periodicalId}</td>
-                                        <td>${sub.periodStart}</td>
-                                        <td>${sub.periodEnd}</td>
-                                        <td>${sub.quantity}</td>
-                                        <td>${sub.sum}</td>
-                                    </tr>
-                                </c:forEach>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </c:if>
             </div>
         </div>
     </div>

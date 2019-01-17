@@ -1,7 +1,7 @@
 <%--image--%>
 <div class="col-sm-4">
     <img class="img-thumbnail img-responsive"
-         src="${path_to_images}id_${periodical_info.id}.jpg"
+         src="${path_to_images}<tags:image_file id="${periodical_info.id}"/>"
          alt="${periodical_info.title}"/>
 </div>
 <%--properties--%>
@@ -62,12 +62,12 @@
             <fmt:message key="label.periodical.price"/>
         </label>
         <div class="col-sm-9 text-left">
-            <span><strong><c:out value="${periodical_info.pricePerPeriod}"/>&#32;
-                            <fmt:message key="currency.uah"/>&#32;
-                            <fmt:message key="text.periodical.for"/>&#32;
-                            ${periodical_info.minSubscriptionPeriod}&#32;
-                            <fmt:message key="text.periodical.months"/></strong>
-            </span>
+            <span class="price"><c:out value="${periodical_info.pricePerPeriod}"/></span>&#32;
+            <fmt:message key="currency.uah"/>&#32;
+            <fmt:message key="text.periodical.for"/>&#32;
+            <span class="price">${periodical_info.minSubscriptionPeriod}</span>&#32;
+            <fmt:message key="text.periodical.months"/>
+
         </div>
     </div>
     <%--subscribe--%>

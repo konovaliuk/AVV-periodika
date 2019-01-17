@@ -24,12 +24,9 @@ public class UserType implements Entity<Long> {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 
     @Override
@@ -37,15 +34,19 @@ public class UserType implements Entity<Long> {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof UserType)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
         UserType userType = (UserType) o;
-        return Objects.equals(id, userType.id) && Objects.equals(name, userType.name);
+        return Objects.equals(id, userType.id) &&
+               Objects.equals(name, userType.name);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

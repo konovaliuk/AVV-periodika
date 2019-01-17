@@ -1,51 +1,51 @@
 package controller;
 
 import common.LoggerLoader;
-import common.ViewConstants;
 import org.apache.log4j.Logger;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static common.ResourceManager.*;
 
 public class CommandManager {
-    public static final String PATH_MAIN = RM_VIEW_PAGES.get(URL_MAIN);
-    public static final String PATH_LOGOUT = RM_VIEW_PAGES.get(URL_LOGOUT);
-    public static final String PATH_CATALOG = RM_VIEW_PAGES.get(URL_CATALOG);
-    public static final String PATH_PERIODICAL = RM_VIEW_PAGES.get(URL_PERIODICAL);
-    public static final String PATH_CABINET = RM_VIEW_PAGES.get(URL_CABINET);
-    public static final String PATH_SUBSCRIPTION = RM_VIEW_PAGES.get(URL_SUBSCRIPTION);
+    private static final Map<String, CommandEnum> PATH_COMMAND_MAP;
+    private static final String PARAM_NAME_COMMAND = "command";
     private static final Logger LOGGER = LoggerLoader.getLogger(CommandManager.class);
-    private static final String PATH_ROOT = RM_VIEW_PAGES.get(URL_ROOT);
+    private static final String LOG_INCORRECT_COMMAND = "Incorrect command: ";
+    private static final String METHOD_POST = "POST";
 
-    public static Command findCommand(SessionRequestContent context) {
+    static {
+        Map<String, CommandEnum> aMap = new HashMap<>();
+        aMap.put(null, CommandEnum.EMPTY);
+        aMap.put("", CommandEnum.EMPTY);
+        aMap.put(RM_VIEW_PAGES.get(URL_ROOT), CommandEnum.NAV_MAIN);
+        aMap.put(RM_VIEW_PAGES.get(URL_MAIN), CommandEnum.NAV_MAIN);
+        aMap.put(RM_VIEW_PAGES.get(URL_LOGOUT), CommandEnum.LOGOUT);
+        aMap.put(RM_VIEW_PAGES.get(URL_CATALOG), CommandEnum.NAV_CATALOG);
+        aMap.put(RM_VIEW_PAGES.get(URL_PERIODICAL), CommandEnum.NAV_PERIODICAL);
+        aMap.put(RM_VIEW_PAGES.get(URL_CABINET), CommandEnum.NAV_CABINET);
+        aMap.put(RM_VIEW_PAGES.get(URL_SUBSCRIPTION), CommandEnum.NAV_SUBSCRIPTION);
+        aMap.put(RM_VIEW_PAGES.get(URL_PAYMENT), CommandEnum.NAV_PAYMENT);
+        PATH_COMMAND_MAP = Collections.unmodifiableMap(aMap);
+    }
+
+    public static Command findCommand(HttpContext context) {
         CommandEnum command = CommandEnum.EMPTY;
-        if ("POST".equals(context.getMethod())) {
-            String commandName = context.getRequestParameter(ViewConstants.PARAM_NAME_COMMAND);
+        if (METHOD_POST.equals(context.getMethod())) {
+            String commandName = context.getRequestParameter(PARAM_NAME_COMMAND);
             if (commandName != null && !commandName.isEmpty()) {
                 try {
                     command = CommandEnum.valueOf(commandName.toUpperCase());
                 } catch (IllegalArgumentException e) {
-                    LOGGER.error("Incorrect command: " + commandName);
+                    LOGGER.error(LOG_INCORRECT_COMMAND + commandName);
                 }
             }
         }
         if (command == CommandEnum.EMPTY) {
-            String path = context.getServletPath();
-            if (path != null && !path.isEmpty()) {
-                command = CommandEnum.NAV_JSP;
-                if (path.equals(PATH_ROOT) || path.equals(PATH_MAIN)) {
-                    command = CommandEnum.NAV_MAIN;
-                } else if (path.equals(PATH_LOGOUT)) {
-                    command = CommandEnum.LOGOUT;
-                } else if (path.equals(PATH_CATALOG)) {
-                    command = CommandEnum.NAV_CATALOG;
-                } else if (path.equals(PATH_PERIODICAL)) {
-                    command = CommandEnum.NAV_PERIODICAL;
-                } else if (path.equals(PATH_CABINET)) {
-                    command = CommandEnum.NAV_CABINET;
-                } else if (path.equals(PATH_SUBSCRIPTION)) {
-                    command = CommandEnum.NAV_SUBSCRIPTION;
-                }
-            }
+            String path = context.getRequestURIWithoutContext().toLowerCase();
+            command = PATH_COMMAND_MAP.getOrDefault(path, CommandEnum.NAV_JSP);
         }
         return CommandSecurity.validateCommandRequest(context, command);
     }

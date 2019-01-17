@@ -1,6 +1,5 @@
 package view.tags;
 
-import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 public class IsCurrentPathTag extends TagSupport {
@@ -13,7 +12,7 @@ public class IsCurrentPathTag extends TagSupport {
     }
 
     @Override
-    public int doStartTag() throws JspTagException {
+    public int doStartTag() {
         String currentPath = (String) pageContext.getRequest().getAttribute(ATTR_NAME_CURRENT_URI);
         pageContext.setAttribute(VAR_IS_CURRENT_PATH, (path != null && path.equalsIgnoreCase(currentPath)));
         return SKIP_BODY;

@@ -1,6 +1,7 @@
 package model;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Periodical implements Entity<Long> {
     private Long id;
@@ -124,5 +125,38 @@ public class Periodical implements Entity<Long> {
 
     public void setCategoryType(CategoryType categoryType) {
         this.categoryType = categoryType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id,
+                            categoryId,
+                            title,
+                            description,
+                            minSubscriptionPeriod,
+                            issuesPerPeriod,
+                            pricePerPeriod,
+                            categoryName,
+                            categoryType);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Periodical that = (Periodical) o;
+        return Objects.equals(id, that.id) &&
+               Objects.equals(categoryId, that.categoryId) &&
+               Objects.equals(title, that.title) &&
+               Objects.equals(description, that.description) &&
+               Objects.equals(minSubscriptionPeriod, that.minSubscriptionPeriod) &&
+               Objects.equals(issuesPerPeriod, that.issuesPerPeriod) &&
+               Objects.equals(pricePerPeriod, that.pricePerPeriod) &&
+               Objects.equals(categoryName, that.categoryName) &&
+               categoryType == that.categoryType;
     }
 }

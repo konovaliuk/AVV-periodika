@@ -2,6 +2,7 @@ package model;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
+import java.util.Objects;
 
 public class Subscription implements Entity<Long> {
     private Long id;
@@ -113,5 +114,30 @@ public class Subscription implements Entity<Long> {
 
     public YearMonth getMinPeriodStart() {
         return YearMonth.now().plusMonths(1);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, userId, periodicalId, paymentId, periodStart, periodCount, periodEnd, quantity, sum);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Subscription that = (Subscription) o;
+        return Objects.equals(id, that.id) &&
+               Objects.equals(userId, that.userId) &&
+               Objects.equals(periodicalId, that.periodicalId) &&
+               Objects.equals(paymentId, that.paymentId) &&
+               Objects.equals(periodStart, that.periodStart) &&
+               Objects.equals(periodCount, that.periodCount) &&
+               Objects.equals(periodEnd, that.periodEnd) &&
+               Objects.equals(quantity, that.quantity) &&
+               Objects.equals(sum, that.sum);
     }
 }

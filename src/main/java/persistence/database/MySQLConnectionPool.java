@@ -14,9 +14,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import static common.ResourceManager.DB_POOL_DATASOURCE_NAME;
 import static common.ResourceManager.RM_DATABASE;
 
-public class MySQLConnectionPool {
-    private static final Logger LOGGER = LoggerLoader.getLogger(MySQLConnectionPool.class);
-    private static MySQLConnectionPool instance = null;
+public final class MySQLConnectionPool {
+    private static final Logger LOGGER = LoggerLoader.getLogger(persistence.database.MySQLConnectionPool.class);
+    private static persistence.database.MySQLConnectionPool instance = null;
     private volatile static boolean instanceCreated = false;
     private static ReentrantLock lock = new ReentrantLock();
     private DataSource dataSource;
@@ -25,26 +25,9 @@ public class MySQLConnectionPool {
         try {
             dataSource = (DataSource) new InitialContext().lookup(RM_DATABASE.get(DB_POOL_DATASOURCE_NAME));
         } catch (NamingException e) {
-            //TODO add log
+            LOGGER.error(e);
             throw new DAOException(e);
         }
-    }
-
-    public static MySQLConnectionPool getInstance() throws DAOException {
-        if (!instanceCreated) {
-            lock.lock();
-            try {
-                if (!instanceCreated) {
-                    instance = new MySQLConnectionPool();
-                    instanceCreated = true;
-                }
-            } catch (DAOException e) {
-                throw new DAOException(e);
-            } finally {
-                lock.unlock();
-            }
-        }
-        return instance;
     }
 
     public static Connection getConnection() throws DAOException {
@@ -61,9 +44,26 @@ public class MySQLConnectionPool {
                 conn.close();
             }
         } catch (SQLException e) {
-            //todo add logger
+            LOGGER.error(e);
             throw new DAOException(e);
         }
+    }
+
+    private static persistence.database.MySQLConnectionPool getInstance() throws DAOException {
+        if (!instanceCreated) {
+            lock.lock();
+            try {
+                if (!instanceCreated) {
+                    instance = new persistence.database.MySQLConnectionPool();
+                    instanceCreated = true;
+                }
+            } catch (DAOException e) {
+                throw new DAOException(e);
+            } finally {
+                lock.unlock();
+            }
+        }
+        return instance;
     }
 
 }

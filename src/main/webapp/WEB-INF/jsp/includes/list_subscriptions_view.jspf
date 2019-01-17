@@ -1,0 +1,54 @@
+<table class="table table-hover">
+    <thead>
+    <tr>
+        <th><fmt:message key="text.subscriptions.periodical_info"/></th>
+        <th><fmt:message key="text.subscriptions.duration_calc"/></th>
+        <th><fmt:message key="text.subscriptions.cost_calc"/></th>
+    </tr>
+    </thead>
+    <tbody>
+    <c:forEach var="sub" items="${subscriptions_list}">
+        <tr>
+            <td>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="thumbnail" style="max-width: 70px; float: left">
+                            <a href="periodical?periodicalId=${sub.periodicalId}">
+                                <img class="img-responsive"
+                                     src="${path_to_images}<tags:image_file id="${sub.periodicalId}"/>"
+                                     alt="${sub.periodical.title}" style="width:100%"/>
+                            </a>
+                        </div>
+                        <p><a href="subscription?subscriptionId=${sub.id}"><fmt:message
+                                key="label.subscription.id"/><strong>${sub.id}</strong></a><br/></p>
+                        <a href="periodical?periodicalId=${sub.periodicalId}">
+                            &nbsp;#<strong>${sub.periodical.id}</strong> <c:out value="${sub.periodical.title}"/>
+                        </a>
+                        <p class="text-left"><strong>&nbsp;<fmt:message key="label.periodical.periodicity"/> </strong>
+                                ${sub.periodical.issuesPerPeriod} <fmt:message key="text.periodical.issues"/> /
+                                ${sub.periodical.minSubscriptionPeriod} <fmt:message key="text.periodical.months"/>
+                        </p>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <p><strong>${sub.periodStart} - ${sub.periodEnd}</strong></p>
+                <p>(${sub.duration} <fmt:message key="text.periodical.months"/>)</p>
+            </td>
+            <td>
+                <p>
+                    <c:if test="${empty sub.paymentId}">
+                        ${sub.periodical.pricePerPeriod} <fmt:message key="currency.uah"/><br/>
+                        x ${sub.periodCount}<br/>
+                        x ${sub.quantity}<br/>
+                        = </c:if><strong>${sub.sum} <fmt:message key="currency.uah"/></strong></p>
+                <c:if test="${not empty sub.paymentId}">
+                    <a href="payment?paymentId=${sub.paymentId}">
+                        <fmt:message key="text.cabinet.payment_information"/>
+                    </a>
+                </c:if>
+            </td>
+        </tr>
+    </c:forEach>
+    </tbody>
+</table>

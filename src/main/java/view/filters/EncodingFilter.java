@@ -20,7 +20,7 @@ public class EncodingFilter implements Filter {
     private String encoding;
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
         encoding = StringUtils.defaultString(filterConfig.getInitParameter(PARAM_NAME_ENCODING), DEFAULT_ENCODING);
     }
 

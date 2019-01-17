@@ -1,14 +1,18 @@
-<c:forEach var="periodical" items="${periodicals}">
-    <div class="col-md-3">
-        <div class="thumbnail">
-            <a href="periodical?periodicalId=${periodical.id}">
-                <img class="img-responsive"
-                     src="${path_to_images}id_${periodical.id}.jpg"
-                     alt="${periodical.title}" style="width:100%"/>
-                <div class="caption text-uppercase">
-                    <p>${periodical.title}</p>
-                </div>
-            </a>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<div class="row">
+    <c:forEach var="periodical" items="${periodicals}">
+        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
+            <div class="thumbnail">
+                <a href="periodical?periodicalId=${periodical.id}">
+                    <img class="img-responsive"
+                         src="${path_to_images}<tags:image_file id="${periodical.id}"/>"
+                         alt="${periodical.title}"
+                         style="width:100%">
+                    <div class="caption text-uppercase small">
+                        <p>${periodical.title}</p>
+                    </div>
+                </a>
+            </div>
         </div>
-    </div>
-</c:forEach>
+    </c:forEach>
+</div>

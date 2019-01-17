@@ -8,7 +8,7 @@
 
     <servlet>
         <servlet-name>Periodika</servlet-name>
-        <servlet-class>controller.Servlet</servlet-class>
+        <servlet-class>controller.Controller</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Periodika</servlet-name>
@@ -21,6 +21,7 @@
         <url-pattern>/periodical</url-pattern>
         <url-pattern>/subscription</url-pattern>
         <url-pattern>/cabinet</url-pattern>
+        <url-pattern>/payment</url-pattern>
     </servlet-mapping>
 
     <filter>

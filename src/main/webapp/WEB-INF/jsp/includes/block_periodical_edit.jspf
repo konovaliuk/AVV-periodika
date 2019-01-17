@@ -1,10 +1,10 @@
 <div class="col-sm-4">
     <img class="img-thumbnail img-responsive"
-         src="${path_to_images}id_${temp_periodical_info.id}.jpg"
+         src="${path_to_images}<tags:image_file id="${temp_periodical_info.id}"/>"
          alt="${temp_periodical_info.title}"/>
 </div>
 <div class="col-sm-8">
-    <form method="post">
+    <form class="form-horizontal" method="post">
         <input type="hidden" name="periodical_id" value="${temp_periodical_info.id}"/>
         <div class="form-group">
             <label for="id">
@@ -13,7 +13,7 @@
             <span id="id"> <c:out value=" ${temp_periodical_info.id}"/></span>
         </div>
         <tags:validation key="title"/>
-        <div class="form-group ${valid_class}">
+        <div class="form-group has-feedback has-${valid_class}">
             <label for="title">
                 <fmt:message key="label.periodical.title"/>
             </label>
@@ -25,6 +25,7 @@
                     </c:if>
                    value="<c:out value="${temp_periodical_info.title}"/>"/>
             ${valid_icon}
+            ${errorMessage}
         </div>
         <div class="form-group">
             <label for="desc">
@@ -33,7 +34,8 @@
             <textarea rows="4" cols="50" id="desc" class="form-control" name="description"><c:out
                     value="${temp_periodical_info.description}"/></textarea>
         </div>
-        <div class="form-group">
+        <tags:validation key="periodical_category_id"/>
+        <div class="form-group has-feedback has-${valid_class}">
             <label for="category">
                 <fmt:message key="label.periodical.category_id"/>
             </label>
@@ -46,30 +48,43 @@
                     </option>
                 </c:forEach>
             </select>
+            ${valid_icon}
+            ${errorMessage}
         </div>
-        <div class="row form-group">
-            <div class="col-xs-4">
+        <div class="row form-group has-feedback has-${valid_class}">
+            <tags:validation key="min_subscription_period"/>
+            <div class="col-xs-6">
                 <label for="min-period">
                     <fmt:message key="label.periodical.min_period"/>
                 </label>
                 <input id="min-period" type="number" class="form-control" name="min_subscription_period"
-                       value="<c:out value="${temp_periodical_info.minSubscriptionPeriod}"/>"/>
+                       value="<c:out value="${temp_periodical_info.minSubscriptionPeriod}"/>" step="1" min="1"/>
+                ${valid_icon}
+                ${errorMessage}
             </div>
-            <div class="col-xs-4">
+        </div>
+        <div class="row form-group has-feedback has-${valid_class}">
+            <tags:validation key="issues_per_period"/>
+            <div class="col-xs-6">
                 <label for="issues">
                     <fmt:message key="label.periodical.issues"/>
                 </label>
                 <input id="issues" type="number" class="form-control" name="issues_per_period"
-                       value="<c:out value="${temp_periodical_info.issuesPerPeriod}"/>"/>
+                       value="<c:out value="${temp_periodical_info.issuesPerPeriod}"/>" step="1"/>
+                ${valid_icon}
+                ${errorMessage}
             </div>
         </div>
-        <div class="row form-group">
+        <tags:validation key="price_per_period"/>
+        <div class="row form-group has-feedback has-${valid_class}">
             <div class="col-xs-4">
-                <label class="col-sm-2" for="price">
+                <label for="price">
                     <fmt:message key="label.periodical.price"/>
                 </label>
-                <input id="price" type="number" class="form-control" name="price_per_period"
+                <input id="price" type="number" step=".01" class="form-control" name="price_per_period"
                        value="<c:out value="${temp_periodical_info.pricePerPeriod}"/>"/>
+                ${valid_icon}
+                ${errorMessage}
             </div>
         </div>
         <div class="form-group">
@@ -78,9 +93,16 @@
                     class="btn btn-success btn-lg pull-left">
                 <span class="glyphicon glyphicon-save"></span> <fmt:message key="button.save"/>
             </button>
-            <button type="submit" class="btn btn-danger btn-lg pull-right">
+            <c:set var="return_path" value="catalog"/>
+            <c:if test="${not empty temp_periodical_info.categoryId and not (0 eq temp_periodical_info.categoryId)}">
+                <c:set var="return_path" value="catalog?categoryId=${temp_periodical_info.categoryId}"/>
+            </c:if>
+            <c:if test="${not empty temp_periodical_info.id}">
+                <c:set var="return_path" value="periodical?periodicalId=${temp_periodical_info.id}"/>
+            </c:if>
+            <a class="btn btn-danger btn-lg pull-right" href="${return_path}">
                 <span class="glyphicon glyphicon-remove"></span> <fmt:message key="button.cancel"/>
-            </button>
+            </a>
         </div>
     </form>
 </div>

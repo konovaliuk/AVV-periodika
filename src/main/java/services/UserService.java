@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
 import persistence.dao.DAOException;
 import persistence.dao.DAOFactory;
 import persistence.dao.UserDAO;
-import persistence.database.DBContext;
-import services.sto.StateHolderSaveEntity;
+import persistence.database.DbContext;
+import services.states.GenericStateSave;
 
 import static common.ResourceManager.MESSAGE_REGISTER_EXIST;
 import static common.ResourceManager.RM_DAO_USER_TYPE;
@@ -20,37 +20,45 @@ import static common.ViewConstants.INPUT_USER_LOGIN;
 public class UserService {
     private static final Logger LOGGER = LoggerLoader.getLogger(UserService.class);
 
-    public static User serveLogin(User user) {
-        User userInfo = DBContext
-                .executeTransactionOrNull(context -> DAOFactory.getUserDAO().findByLogin(user.getLogin(), context));
+    UserService() {
+    }
+
+    public User serveLogin(User user) {
+        User userInfo = DbContext
+                .executeTransactionOrNull(context -> DAOFactory.getFactory()
+                        .getUserDAO()
+                        .findByLogin(user.getLogin(), context));
         if (userInfo != null && userInfo.getPassword().equals(user.getPassword())) {
+            LOGGER.info("User logged in " + userInfo.getLogin());
             userInfo.setPassword(null);
             return userInfo;
         }
-        LOGGER.info("Unauthorized login attempt.");
+        LOGGER.error("Unauthorized login attempt.");
         return null;
     }
 
-    public static void serveSaveUser(StateHolderSaveEntity<User> state) {
+    public void serveSaveUser(GenericStateSave<User> state) {
         User newUser = null;
-        try (DBContext dbContext = new DBContext()) {
-            UserDAO userDAO = DAOFactory.getUserDAO();
-            User user = state.getEntity();
-            state.setValidationInfo(Validator.match(user, new UserValidating(state.getLanguage())));
-            if (state.getValidationInfo().containsErrors()) {
-                state.setResultState(StateHolderSaveEntity.State.ERROR_WRONG_PARAMETERS);
-                return;
-            }
+        User user = state.getEntity();
+        state.setValidationInfo(Validator.match(user, new UserValidating(state.getLanguage())));
+        if (state.getValidationInfo().containsErrors()) {
+            state.setResultState(GenericStateSave.State.ERROR_WRONG_PARAMETERS);
+            return;
+        }
+        try (DbContext dbContext = new DbContext()) {
+            UserDAO userDAO = DAOFactory.getFactory().getUserDAO();
             UserType userTypeClient =
-                    DAOFactory.getUserTypeDAO().findById(RM_DAO_USER_TYPE.getLong(USER_TYPE_CLIENT_ID), dbContext);
+                    DAOFactory.getFactory()
+                            .getUserTypeDAO()
+                            .findById(RM_DAO_USER_TYPE.getLong(USER_TYPE_CLIENT_ID), dbContext);
             if (userTypeClient == null) {
-                state.setResultState(StateHolderSaveEntity.State.ERROR_ENTITY_NOT_SAVED);
+                state.setResultState(GenericStateSave.State.ERROR_ENTITY_NOT_SAVED);
                 return;
             }
-            if (user.getId() == null) {
+            if (user.notSaved()) {
                 if (userDAO.findByLogin(user.getLogin(), dbContext) != null) {
                     state.getValidationInfo().setError(INPUT_USER_LOGIN, MESSAGE_REGISTER_EXIST);
-                    state.setResultState(StateHolderSaveEntity.State.ERROR_WRONG_PARAMETERS);
+                    state.setResultState(GenericStateSave.State.ERROR_WRONG_PARAMETERS);
                     return;
                 }
                 user.setUserTypeId(userTypeClient.getId());

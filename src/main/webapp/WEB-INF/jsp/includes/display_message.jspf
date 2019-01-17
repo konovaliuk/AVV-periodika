@@ -1,6 +1,8 @@
 <c:if test="${not empty message_to_display}">
+    <%@ include file="common_localization.jspf" %>
     <div class="alert ${message_style} alert-dismissible">
-        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>${message_to_display}
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <fmt:message bundle="${view_messages}" key="${message_to_display}"/>
     </div>
     <c:remove var="message_to_display" scope="session"/>
     <c:remove var="message_style" scope="session"/>

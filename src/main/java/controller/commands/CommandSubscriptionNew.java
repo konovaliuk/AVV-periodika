@@ -2,26 +2,25 @@ package controller.commands;
 
 import controller.Command;
 import controller.CommandResult;
-import controller.SessionRequestContent;
+import controller.HttpContext;
 import model.Periodical;
 import model.SubscriptionInfo;
 import model.User;
 import org.apache.commons.lang3.math.NumberUtils;
-import services.PeriodicalService;
+import services.ServiceFactory;
 
 import static common.ResourceManager.MESSAGE_COMMAND_EXECUTION_ERROR;
-import static common.ResourceManager.NULL_ID;
 import static common.ResourceManager.RM_VIEW_PAGES;
 import static common.ResourceManager.URL_SUBSCRIPTION;
 import static common.ViewConstants.ATTR_NAME_TEMP_SUBSCRIPTION;
 import static common.ViewConstants.PARAM_NAME_PERIODICAL_ID;
+import static model.Entity.NULL_ID;
 
 public class CommandSubscriptionNew implements Command {
-
     private static final int NEW_SUBSCRIPTION_QUANTITY = 1;
 
     @Override
-    public CommandResult execute(SessionRequestContent context) {
+    public CommandResult execute(HttpContext context) {
         SubscriptionInfo subscription = initEntity(context);
         if (subscription == null) {
             context.setMessageDanger(MESSAGE_COMMAND_EXECUTION_ERROR);
@@ -31,7 +30,7 @@ public class CommandSubscriptionNew implements Command {
         return CommandResult.redirect(RM_VIEW_PAGES.get(URL_SUBSCRIPTION));
     }
 
-    private SubscriptionInfo initEntity(SessionRequestContent context) {
+    private SubscriptionInfo initEntity(HttpContext context) {
         User user = context.getCurrentUser();
         if (user == null) {
             return null;
@@ -40,7 +39,7 @@ public class CommandSubscriptionNew implements Command {
         if (periodicalId == NULL_ID) {
             return null;
         }
-        Periodical periodical = PeriodicalService.findPeriodical(periodicalId);
+        Periodical periodical = ServiceFactory.getPeriodicalService().findPeriodical(periodicalId);
         if (periodical == null) {
             return null;
         }

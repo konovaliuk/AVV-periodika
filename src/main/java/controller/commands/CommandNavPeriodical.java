@@ -1,43 +1,47 @@
 package controller.commands;
 
-import common.LoggerLoader;
 import controller.Command;
 import controller.CommandResult;
-import controller.SessionRequestContent;
+import controller.HttpContext;
+import model.Entity;
 import model.Periodical;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.log4j.Logger;
-import services.PeriodicalService;
-import services.sto.StateHolderNavPeriodical;
+import services.ServiceFactory;
+import services.states.StateNavPeriodical;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static common.ResourceManager.*;
+import static common.ResourceManager.MESSAGE_COMMAND_EXECUTION_ERROR;
+import static common.ResourceManager.PAGE_PERIODICAL;
+import static common.ResourceManager.RM_VIEW_PAGES;
+import static common.ResourceManager.URL_CATALOG;
 import static common.ViewConstants.*;
 
 public class CommandNavPeriodical implements Command {
-    private static final Logger LOGGER = LoggerLoader.getLogger(CommandNavPeriodical.class);
+    private static final String ATTR_NAME_PERIODICAL = "periodical_info";
+    private static final String ATTR_NAME_CATEGORIES = "categories";
 
     @Override
-    public CommandResult execute(SessionRequestContent context) {
-        StateHolderNavPeriodical state = readState(context);
-        PeriodicalService.serveNavPeriodical(state);
+    public CommandResult execute(HttpContext context) {
+        StateNavPeriodical state = readState(context);
+        ServiceFactory.getPeriodicalService().serveNavigate(state);
         return writeNewState(state, context);
     }
 
-    private StateHolderNavPeriodical readState(SessionRequestContent context) {
-        StateHolderNavPeriodical state = new StateHolderNavPeriodical();
-        state.setTempPeriodical((Periodical) context.getSessionAttribute(ATTR_NAME_TEMP_PERIODICAL));
+    private StateNavPeriodical readState(HttpContext context) {
+        StateNavPeriodical state = new StateNavPeriodical();
+        state.setTempEntity((Periodical) context.getSessionAttribute(ATTR_NAME_TEMP_PERIODICAL));
         context.removeSessionAttribute(ATTR_NAME_TEMP_PERIODICAL);
-        state.setPeriodicalId(NumberUtils.toLong(context.getRequestParameter(PARAM_NAME_PERIODICAL_ID), NULL_ID));
+        state.setEntityId(NumberUtils.toLong(context.getRequestParameter(PARAM_NAME_PERIODICAL_ID),
+                                             Entity.NULL_ID));
         return state;
     }
 
-    private CommandResult writeNewState(StateHolderNavPeriodical state, SessionRequestContent context) {
+    private CommandResult writeNewState(StateNavPeriodical state, HttpContext context) {
         switch (state.getResultState()) {
             case ERROR_SERVICE_EXCEPTION:
-                context.setMessageDanger(RM_VIEW_MESSAGES.get(MESSAGE_COMMAND_EXECUTION_ERROR));
+                context.setMessageDanger(MESSAGE_COMMAND_EXECUTION_ERROR);
                 return CommandResult.redirect(null);
             case ERROR_WRONG_PARAMETERS:
                 return CommandResult.redirect(RM_VIEW_PAGES.get(URL_CATALOG));
@@ -46,8 +50,8 @@ public class CommandNavPeriodical implements Command {
             case EDIT_PERIODICAL:
                 context.setRequestAttribute(ATTR_NAME_EDIT_MODE, true);
             case VIEW_PERIODICAL:
-                context.setRequestAttribute(ATTR_NAME_PERIODICAL, state.getPeriodical());
-                context.setRequestAttribute(ATTR_NAME_TEMP_PERIODICAL, state.getTempPeriodical());
+                context.setRequestAttribute(ATTR_NAME_PERIODICAL, state.getEntity());
+                context.setRequestAttribute(ATTR_NAME_TEMP_PERIODICAL, state.getTempEntity());
             default:
                 context.setRequestAttribute(ATTR_NAME_NEWSPAPERS, state.getCategoryNewspapers());
                 context.setRequestAttribute(ATTR_NAME_MAGAZINES, state.getCategoryMagazines());

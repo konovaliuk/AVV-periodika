@@ -5,7 +5,7 @@ import java.util.ResourceBundle;
 
 import static common.ViewConstants.VIEW_PAGE_ELEMENTS_RESOURCE;
 
-public class CategoryTypeBean {
+public final class CategoryTypeBean {
     private static final String KEY_NEWSPAPER = "text.category.type_newspaper";
     private static final String KEY_MAGAZINE = "text.category.type_magazine";
     private static final String KEY_NEWSPAPERS_CATEGORIES = "text.catalog.newspapers_categories";

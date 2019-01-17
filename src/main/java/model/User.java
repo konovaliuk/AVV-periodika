@@ -1,7 +1,6 @@
 package model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import static common.ResourceManager.RM_DAO_USER_TYPE;
 import static common.ResourceManager.USER_TYPE_ADMIN_ID;
@@ -161,39 +160,28 @@ public class User implements Entity<Long> {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof User)) {
-            return false;
-        }
-        User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(userTypeId, user.userTypeId) &&
-               Objects.equals(firstName, user.firstName) && Objects.equals(middleName, user.middleName) &&
-               Objects.equals(lastName, user.lastName) && Objects.equals(email, user.email) &&
-               Objects.equals(address, user.address) && Objects.equals(phone, user.phone) &&
-               Objects.equals(login, user.login) && Objects.equals(password, user.password);
-    }
-
-    @Override
     public int hashCode() {
         return Objects.hash(id, userTypeId, firstName, middleName, lastName, email, address, phone, login, password);
     }
 
     @Override
-    public String toString() {
-        return new StringJoiner(", ", User.class.getSimpleName() + "[", "]").add("id=" + id)
-                .add("userTypeId=" + userTypeId)
-                .add("firstName='" + firstName + "'")
-                .add("middleName='" + middleName + "'")
-                .add("lastName='" + lastName + "'")
-                .add("email='" + email + "'")
-                .add("address='" + address + "'")
-                .add("phone='" + phone + "'")
-                .add("login='" + login + "'")
-                .add("password='" + password + "'")
-                .toString();
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        User user = (User) o;
+        return Objects.equals(id, user.id) &&
+               Objects.equals(userTypeId, user.userTypeId) &&
+               Objects.equals(firstName, user.firstName) &&
+               Objects.equals(middleName, user.middleName) &&
+               Objects.equals(lastName, user.lastName) &&
+               Objects.equals(email, user.email) &&
+               Objects.equals(address, user.address) &&
+               Objects.equals(phone, user.phone) &&
+               Objects.equals(login, user.login) &&
+               Objects.equals(password, user.password);
     }
-
 }

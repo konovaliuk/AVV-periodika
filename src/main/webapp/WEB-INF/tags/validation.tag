@@ -11,10 +11,9 @@
 <c:set var="errorMessage" value=""/>
 <c:if test="${not empty validation_info}">
     <c:set var="isValid" value="${validation_info.isValid(key)}"/>
-    <c:set var="valid_class"
-           value="has-feedback has-${isValid?'success':'warning'}"/>
+    <c:set var="valid_class" value="${isValid?'success':'warning'}"/>
     <c:set var="valid_icon">
-        <span class='form-control-feedback glyphicon glyphicon-${isValid?'ok':'warning-sign'}'></span>
+        <span class="form-control-feedback glyphicon glyphicon-${isValid?'ok':'warning-sign'} text-${valid_class}"></span>
     </c:set>
     <c:if test="${not isValid}">
         <c:set var="errorMessageKey" value="${validation_info.getErrorMessage(key)}"/>

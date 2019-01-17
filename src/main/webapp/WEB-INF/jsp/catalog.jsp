@@ -40,9 +40,7 @@
                 </c:if>
                 <c:if test="${display_periodicals}">
                     <hr/>
-                    <div class="row">
                         <%@ include file="includes/list_periodicals.jspf" %>
-                    </div>
                     <hr/>
                     <div class="row">
                         <div class="col-sm-12">

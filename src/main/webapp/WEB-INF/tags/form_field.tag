@@ -12,7 +12,7 @@
     <c:set var="req_attribute">required=${required}</c:set>
 </c:if>
 <tags:validation key="${fieldName}"/>
-<div class="form-group ${valid_class}">
+<div class="form-group has-feedback has-${valid_class}">
     <label class="control-label col-sm-3" for="${fieldName}">
         <fmt:message key="label.user.${fieldName}"/> ${required eq "true" ? '*':''}
     </label>
@@ -21,9 +21,7 @@
                 <c:if test="${not empty pattern}">
                     pattern="<fmt:message key="pattern.${pattern}.regexp"/>"
                     title="<fmt:message key="pattern.${pattern}.description"/>"
-                    <%--<c:if test="${not isValid}">--%>
-                        placeholder="<fmt:message key="pattern.${pattern}.description"/>"
-                    <%--</c:if>--%>
+                    placeholder="<fmt:message key="pattern.${pattern}.description"/>"
                 </c:if>
                name="${fieldName}"
                value="${fieldValue}" ${req_attribute}/>
